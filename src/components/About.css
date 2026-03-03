@@ -1,0 +1,18 @@
+.about {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 80px 32px 120px;
+}
+
+.about-heading {
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.about-text {
+  font-size: 18px;
+  line-height: 1.8;
+  color: #333;
+  max-width: 600px;
+}

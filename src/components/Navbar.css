@@ -1,0 +1,64 @@
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 48px;
+  background-color: rgba(255, 255, 255, 0);
+  box-shadow: none;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease, background-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.navbar--visible {
+  opacity: 1;
+  pointer-events: all;
+  background-color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
+}
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.navbar-logo-img {
+  width: 32px;
+  height: auto;
+}
+
+.navbar-logo-img.navbar-logo-jump {
+  animation: navbar-frog-jump 0.45s ease-out forwards;
+}
+
+@keyframes navbar-frog-jump {
+  0%   { transform: scale(1) translateY(0); }
+  30%  { transform: scale(1.15) translateY(-18px); }
+  50%  { transform: scale(1.1) translateY(-20px); }
+  75%  { transform: scale(0.95) translateY(3px); }
+  90%  { transform: scale(1.03) translateY(-1px); }
+  100% { transform: scale(1) translateY(0); }
+}
+
+.navbar-links {
+  display: flex;
+  gap: 40px;
+}
+
+.navbar-link {
+  font-size: 16px;
+  font-weight: 400;
+  color: #1a1a1a;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.navbar-link:hover {
+  opacity: 0.6;
+}
