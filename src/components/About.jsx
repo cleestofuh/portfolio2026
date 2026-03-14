@@ -3,10 +3,14 @@ import './About.css'
 function About() {
   return (
     <div className="about">
-      <h2 className="about-heading">about</h2>
+      <div className="about-blob">
       <p className="about-text">
-        I'm a product design generalist at heart who dabbles in code, passionate about bringing delightful experiences to life.
+        <span className="about-text-serif reveal">I&apos;m a product designer who cares about people, thinks in systems, sweats the details, and believes even complex workflows deserve a bit of <span className="about-delight">delight<img src="/bulb.svg" alt="" className="about-delight-bulb" /></span>.</span>
+        <br />
+        <span className="about-text-sans reveal" data-reveal-delay="250">Leading enterprise AI and employee experience design at <a href="https://www.linkedin.com/in/cleestofuh/" target="_blank" rel="noopener noreferrer" className="about-link" style={{textTransform: 'none'}}>LinkedIn</a>.
+        </span>
       </p>
+      </div>
     </div>
   )
 }

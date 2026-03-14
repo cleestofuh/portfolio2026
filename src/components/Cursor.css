@@ -1,0 +1,14 @@
+.custom-cursor {
+  position: fixed;
+  pointer-events: none;
+  z-index: 99999;
+  transform-origin: 50% 0%;
+  translate: -50% 0%;
+  transition: none;
+}
+
+@media (pointer: fine) {
+  * {
+    cursor: none !important;
+  }
+}
