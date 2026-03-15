@@ -121,7 +121,7 @@
   margin-left: 4px;
   margin-bottom: -6px;
   align-self: flex-end;
-  filter: saturate(0.88) hue-rotate(-10deg) drop-shadow(0 3px 10px rgba(72, 118, 112, 0.3));
+  filter: saturate(0.88) hue-rotate(-10deg);
 }
 
 .lily.steppable {
