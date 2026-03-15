@@ -3,9 +3,10 @@ import { useLocation } from 'react-router-dom'
 import './App.css'
 import Navbar from './components/Navbar'
 import Ripples from './components/Ripples'
-import About from './components/About'
+import Blurb from './components/Blurb'
 import Work from './components/Work'
 import Contact from './components/Contact'
+import Footer from './components/Footer'
 
 function spawnRippleAt(container, cx, cy, sizes = [80, 140, 200]) {
   const rings = sizes.map((size, i) => ({ delay: i * 150, size }));
@@ -25,6 +26,7 @@ function spawnRippleAt(container, cx, cy, sizes = [80, 140, 200]) {
     }, delay);
   });
 }
+
 
 function setupHoverShift(el, amount = 5) {
   const onEnter = (e) => {
@@ -233,6 +235,9 @@ function App() {
         clearTimeout(readyTimeout);
         clearInterval(wiggleInterval);
         frog.removeEventListener('click', onFrogClick);
+        if (detached && frog.parentNode === document.body) {
+          document.body.removeChild(frog);
+        }
       });
     }
 
@@ -251,13 +256,14 @@ function App() {
   }, []);
 
   useEffect(() => {
+    const timeouts = [];
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry, i) => {
+        entries.forEach((entry) => {
           if (entry.isIntersecting) {
             const el = entry.target;
             const delay = el.dataset.revealDelay || 0;
-            setTimeout(() => el.classList.add('visible'), delay);
+            timeouts.push(setTimeout(() => el.classList.add('visible'), delay));
             observer.unobserve(el);
           }
         });
@@ -272,7 +278,10 @@ function App() {
       observer.observe(el);
     });
 
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      timeouts.forEach(clearTimeout);
+    };
   }, []);
 
   return (
@@ -322,7 +331,7 @@ function App() {
 
       <div className="content-sections">
         <section id="about">
-          <About />
+          <Blurb />
         </section>
 
         <section id="work">
@@ -338,6 +347,7 @@ function App() {
       <section id="contact">
         <Contact />
       </section>
+      <Footer green />
     </>
   )
 }

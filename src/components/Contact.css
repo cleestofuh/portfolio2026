@@ -36,19 +36,12 @@
 .contact-heading {
   font-family: 'DM Sans', sans-serif;
   text-transform: lowercase;
-  font-size: 32px;
+  font-size: 2rem;
   font-weight: 600;
   color: #1a1a1a;
   margin-bottom: 8px;
 }
 
-.contact-sub {
-  font-family: 'DM Sans', sans-serif;
-  font-size: 16px;
-  text-transform: lowercase;
-  color: rgba(0, 0, 0, 0.65);
-  margin-bottom: 40px;
-}
 
 .contact-form {
   display: flex;
@@ -77,7 +70,7 @@
 .contact-input,
 .contact-textarea {
   font-family: 'DM Sans', sans-serif;
-  font-size: 15px;
+  font-size: 0.9375rem;
   color: #1a1a1a;
   background: transparent;
   border: none;
@@ -98,7 +91,7 @@
 
 .contact-btn {
   font-family: 'DM Sans', sans-serif;
-  font-size: 15px;
+  font-size: 1rem;
   font-weight: 600;
   letter-spacing: 0.05em;
   color: #1a1a1a;
@@ -124,7 +117,7 @@
 
 .contact-feedback {
   font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
+  font-size: 0.875rem;
   margin-top: 4px;
 }
 

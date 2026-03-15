@@ -33,7 +33,7 @@
 .navbar-logo-name {
   font-family: 'Just Me Again Down Here', cursive;
   text-transform: lowercase;
-  font-size: 30px;
+  font-size: 1.875rem;
   font-weight: 400;
   color: #1a1a1a;
 }
@@ -64,7 +64,7 @@
 .navbar-link {
   font-family: 'DM Sans', sans-serif;
   text-transform: lowercase;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 400;
   color: #1a1a1a;
   text-decoration: none;
@@ -133,7 +133,7 @@
 .navbar-mobile-link {
   font-family: 'DM Sans', sans-serif;
   text-transform: lowercase;
-  font-size: 20px;
+  font-size: 1.25rem;
   font-weight: 400;
   color: #1a1a1a;
   text-decoration: none;

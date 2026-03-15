@@ -1,16 +1,27 @@
-import { StrictMode } from 'react'
+import { StrictMode, useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import './index.css'
 import App from './App.jsx'
-import AboutPage from './pages/AboutPage.jsx'
+import About from './pages/About.jsx'
+import CaseStudyPage from './pages/CaseStudyPage.jsx'
+
+function ScrollToTop() {
+  const { pathname } = useLocation()
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }, [pathname])
+  return null
+}
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<App />} />
-        <Route path="/about" element={<AboutPage />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/work/:slug" element={<CaseStudyPage />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

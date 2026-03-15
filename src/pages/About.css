@@ -1,0 +1,231 @@
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.about-page {
+  min-height: 100vh;
+  background-color: #fff;
+  padding: 120px 48px 80px;
+}
+
+.about-page-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 80px;
+  align-items: start;
+}
+
+.about-page-photo {
+  opacity: 0;
+  animation: page-enter 0.7s ease-out 0.1s forwards;
+}
+
+.about-page-photo-img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  display: block;
+  border-radius: 58% 42% 52% 48% / 44% 56% 44% 56%;
+  transition: border-radius 0.5s ease;
+}
+
+.about-page-photo-img:hover {
+  border-radius: 44% 56% 40% 60% / 56% 42% 58% 44%;
+}
+
+.about-page-content {
+  padding-top: 8px;
+}
+
+.about-page-name {
+  font-family: 'DM Sans', sans-serif;
+  text-transform: lowercase;
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  font-weight: 600;
+  line-height: 1.1;
+  margin-bottom: 8px;
+  opacity: 0;
+  animation: page-enter 0.7s ease-out 0.2s forwards;
+}
+
+.about-page-role {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  text-transform: lowercase;
+  color: #666;
+  margin-bottom: 12px;
+  opacity: 0;
+  animation: page-enter 0.7s ease-out 0.32s forwards;
+}
+
+.about-page-links {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 40px;
+  opacity: 0;
+  animation: page-enter 0.7s ease-out 0.38s forwards;
+}
+
+.about-page-link {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9375rem;
+  text-transform: lowercase;
+  color: #1a1a1a;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: opacity 0.2s ease;
+}
+
+.about-page-link:hover {
+  opacity: 0.5;
+}
+
+.about-page-link-dot {
+  font-family: 'DM Sans', sans-serif;
+  color: #aaa;
+  font-size: 1rem;
+  user-select: none;
+}
+
+.about-page-bio {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 48px;
+  opacity: 0;
+  animation: page-enter 0.7s ease-out 0.45s forwards;
+}
+
+.about-page-bio p {
+  font-family: 'DM Sans', sans-serif;
+  text-transform: lowercase;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: #333;
+}
+
+
+.about-page-outside {
+  margin-top: 48px;
+  margin-bottom: 48px;
+  opacity: 0;
+  animation: page-enter 0.7s ease-out 0.75s forwards;
+}
+
+.about-page-outside-text {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  color: #333;
+  text-transform: lowercase;
+  line-height: 1.75;
+  margin-bottom: 20px;
+}
+
+.about-page-outside-photos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.about-page-outside-figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.about-page-outside-img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+  transition: border-radius 0.5s ease;
+}
+
+.about-page-outside-figure:nth-child(1) .about-page-outside-img {
+  border-radius: 58% 42% 52% 48% / 44% 56% 44% 56%;
+}
+
+.about-page-outside-figure:nth-child(1) .about-page-outside-img:hover {
+  border-radius: 44% 56% 40% 60% / 56% 42% 58% 44%;
+}
+
+.about-page-outside-figure:nth-child(2) .about-page-outside-img {
+  border-radius: 42% 58% 45% 55% / 56% 44% 58% 42%;
+}
+
+.about-page-outside-figure:nth-child(2) .about-page-outside-img:hover {
+  border-radius: 60% 40% 55% 45% / 42% 58% 40% 60%;
+}
+
+.about-page-outside-figure:nth-child(3) .about-page-outside-img {
+  border-radius: 50% 50% 38% 62% / 60% 42% 58% 40%;
+}
+
+.about-page-outside-figure:nth-child(3) .about-page-outside-img:hover {
+  border-radius: 38% 62% 52% 48% / 44% 58% 42% 56%;
+}
+
+.about-page-outside-figure figcaption {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.75rem;
+  color: #aaa;
+  text-transform: lowercase;
+  text-align: center;
+}
+
+.about-page-skills {
+  display: flex;
+  gap: 48px;
+  opacity: 0;
+  animation: page-enter 0.7s ease-out 0.7s forwards;
+}
+
+.about-page-skills-heading {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: lowercase;
+  letter-spacing: 0.08em;
+  color: #1a1a1a;
+  margin-bottom: 14px;
+}
+
+.about-page-skills-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.about-page-skills-list li {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  color: #333;
+  text-transform: lowercase;
+}
+
+@media (max-width: 768px) {
+  .about-page {
+    padding: 100px 24px 60px;
+  }
+
+  .about-page-inner {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+
+}

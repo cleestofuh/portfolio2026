@@ -51,7 +51,7 @@
   position: relative;
   z-index: 1;
   font-family: 'Just Me Again Down Here', cursive;
-  font-size: clamp(120px, 20vw, 200px);
+  font-size: clamp(7.5rem, 20vw, 12.5rem);
   font-weight: 400;
   line-height: 0.75;
   color: #1a1a1a;
@@ -75,13 +75,12 @@
 
 
 .subtitle {
-  position: relative;
+  position: absolute;
   z-index: 1;
   font-family: 'DM Sans', sans-serif;
-  font-size: clamp(16px, 2vw, 18px);
+  font-size: clamp(1rem, 2vw, 1.125rem);
   font-weight: 400;
   color: #1a1a1a;
-  position: absolute;
   bottom: 8%;
   margin-top: 0;
   opacity: 0;
@@ -169,26 +168,6 @@
   animation: freg-wiggle 0.5s ease-in-out !important;
 }
 
-.freg.clickable {
-  pointer-events: auto;
-  cursor: pointer;
-  animation: none;
-  opacity: 1;
-  transform: scale(1) translateY(0);
-}
-
-.freg.jumping {
-  animation: frog-jump 0.5s ease-out forwards;
-}
-
-@keyframes frog-jump {
-  0%   { transform: scale(1) translateY(0); }
-  30%  { transform: scale(1.1) translateY(-40px); }
-  50%  { transform: scale(1.05) translateY(-45px); }
-  75%  { transform: scale(0.95) translateY(5px); }
-  90%  { transform: scale(1.03) translateY(-2px); }
-  100% { transform: scale(1) translateY(0); }
-}
 
 .hero-nav {
   position: absolute;
@@ -205,7 +184,7 @@
 .hero-nav-link {
   position: relative;
   font-family: 'DM Sans', sans-serif;
-  font-size: clamp(14px, 2vw, 16px);
+  font-size: 1rem;
   font-weight: 600;
   letter-spacing: 0.05em;
   color: #1a1a1a;
@@ -297,6 +276,12 @@
 
 .content-sections {
   background-color: #CFDBE5;
+  position: relative;
+}
+
+.content-sections > section {
+  position: relative;
+  z-index: 1;
 }
 
 .rocks-divider {
@@ -365,7 +350,7 @@
   }
 
   .hero-nav-link {
-    font-size: 12px;
+    font-size: 1rem;
     padding: 8px 20px;
   }
 

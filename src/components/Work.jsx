@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import './Work.css'
 
 const borderPaths = [
@@ -14,24 +15,24 @@ const clipPaths = [
 
 const projects = [
   {
+    slug: 'linkedin',
     company: 'LinkedIn',
     title: 'Enterprise GTM & AI Agents',
     description: 'Shaping product vision for 0→1 enterprise AI workflows for GTM teams through design',
-    tags: ['React', 'Design'],
     image: '/linkedin-logo.jpg',
   },
   {
+    slug: 'netflix',
     company: 'Netflix',
     title: 'Ask me live!',
     description: 'A capstone project exploring new in-app engagement opportunities, validated through research, prototyping, and a final presentation to their design team.',
-    tags: ['Illustration', 'Branding'],
     image: '/netflix-logo.jpg',
   },
   {
+    slug: 'whova',
     company: 'Whova',
     title: 'Break the ice',
     description: 'A low-pressure community feature that uses casual prompts to spark conversation, build event connection, and lift app engagement.',
-    tags: ['Full Stack', 'Mobile'],
     image: '/whova-logo.png',
   },
 ];
@@ -39,11 +40,12 @@ const projects = [
 function Work() {
   return (
     <div className="work">
-      <div className="work-blob">
+      <div className="blob work-blob">
       <h2 className="work-heading reveal">Work</h2>
       <div className="work-grid">
         {projects.map((project, i) => (
-          <div
+          <Link
+            to={`/work/${project.slug}`}
             className="work-card reveal"
             key={i}
             style={{ position: 'relative', clipPath: `url(#card-clip-${i})` }}
@@ -64,7 +66,7 @@ function Work() {
               <h3 className="work-card-title">{project.title}</h3>
               <p className="work-card-desc">{project.description}</p>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
       </div>

@@ -3,7 +3,6 @@ import './Ripples.css'
 
 function Ripples({ containerRef }) {
   const lastSpawn = useRef(0);
-  const rippleId = useRef(0);
 
   const spawnRipple = useCallback((x, y) => {
     const container = containerRef.current;
