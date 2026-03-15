@@ -132,7 +132,7 @@ function NetflixContent() {
               The full capstone report covers our complete research methodology, key themes, ideation, and annotated wireframes in detail.
             </p>
             <a
-              href="/netflix/Netflix Capstone.pdf"
+              href="https://drive.google.com/file/d/1i3w0-Lz_r8djBH0sy6nBgGVvRqnbv2oL/view?usp=sharing"
               target="_blank"
               rel="noreferrer"
               className="cs-pdf-link"
