@@ -120,21 +120,11 @@ function WhovaContent() {
             <p className="cs-section-body">
               After monitoring over several months, the App Engagement Score increased significantly, meeting the success criteria set at the start of the project. The feature demonstrated that a low-friction, personality-driven entry point could meaningfully shift participation behavior even in short-lived event communities.
             </p>
-            <div className="cs-metrics">
-              <div className="cs-metric">
-                <span className="cs-metric-value">+XX%</span>
-                <span className="cs-metric-label">increase in app engagement score</span>
-              </div>
-              <div className="cs-metric">
-                <span className="cs-metric-value">2 wks</span>
-                <span className="cs-metric-label">from brief to final design</span>
-              </div>
-            </div>
           </div>
         </section>
 
         <section className="cs-section">
-          <div className="cs-section-label">09  further reading</div>
+          <div className="cs-section-label">08  further reading</div>
           <div className="cs-section-content">
             <h2 className="cs-section-heading">read about it</h2>
             <div className="cs-article-cards">
