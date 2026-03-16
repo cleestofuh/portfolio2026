@@ -60,7 +60,7 @@ function Navbar({ forceVisible = false }) {
   return (
     <header className={`navbar ${visible || forceVisible ? 'navbar--visible' : ''}`}>
       <a href="/" className="navbar-logo" onClick={handleLogoClick}>
-        <img ref={logoRef} src="/freg.svg" alt="Chris Lo" className="navbar-logo-img" />
+        <img ref={logoRef} src="/freg.svg" alt="chris Lo" className="navbar-logo-img" />
         <span className="navbar-logo-name">chris Lo</span>
       </a>
 
