@@ -6,7 +6,7 @@ function LinkedInContent() {
         <div className="cs-section-content">
           <h2 className="cs-section-heading">project overview</h2>
           <p className="cs-section-body">
-            Enterprise GTM teams at LinkedIn work across a sprawl of disconnected tools and data sources. The result is significant toggle tax and toil. Reps across sales, customer success, and support spend more time navigating systems and handling repetitive low-value tasks than actually selling. Manual research, data entry, and status updates quietly eat up hours that could be spent on work that actually moves the needle.
+            Enterprise GTM teams at LinkedIn work across a sprawl of disconnected tools and data sources. The result is significant toggle tax and toil. Reps across sales, customer success, and support spend more time navigating systems and handling repetitive low-value tasks than actually interfacing with customers. Manual research, data entry, and status updates quietly eat up hours that could be spent on work that actually moves the needle.
           </p>
           <blockquote className="cs-callout">
             How might we reduce the cognitive and operational overhead of enterprise GTM work so reps can focus on the work that drives meaningful customer outcomes?
