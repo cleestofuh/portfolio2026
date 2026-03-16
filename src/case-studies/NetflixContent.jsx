@@ -125,7 +125,7 @@ function NetflixContent() {
         </section>
 
         <section className="cs-section">
-          <div className="cs-section-label">08  full report</div>
+          <div className="cs-section-label">07  full report</div>
           <div className="cs-section-content">
             <h2 className="cs-section-heading">want to go deeper?</h2>
             <p className="cs-section-body">
@@ -143,7 +143,7 @@ function NetflixContent() {
         </section>
 
         <section className="cs-section" id="reflection">
-          <div className="cs-section-label">09  reflection</div>
+          <div className="cs-section-label">08  reflection</div>
           <div className="cs-section-content">
             <h2 className="cs-section-heading">what i learned</h2>
             <p className="cs-section-body">
