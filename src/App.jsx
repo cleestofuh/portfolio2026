@@ -1,10 +1,10 @@
-import { useEffect, useRef } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { useLocation, Link } from 'react-router-dom'
 import './App.css'
 import Navbar from './components/Navbar'
 import Ripples from './components/Ripples'
 import Blurb from './components/Blurb'
-import Work from './components/Work'
+import Work, { borderPaths, projects } from './components/Work'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 
@@ -59,7 +59,10 @@ function getCenterRelativeTo(el, ancestor) {
 function App() {
   const heroRef = useRef(null);
   const pageRef = useRef(null);
+  const quickLinksRef = useRef(null);
   const location = useLocation();
+  const [hoveredStudy, setHoveredStudy] = useState(null);
+  const [previewPos, setPreviewPos] = useState({ right: 0, top: 0 });
 
   useEffect(() => {
     if (location.hash) {
@@ -312,6 +315,64 @@ function App() {
           <a href="#work" className="hero-nav-link">work</a>
           <a href="#contact" className="hero-nav-link">contact</a>
         </nav>
+
+        <div className="cs-quick-links" ref={quickLinksRef}>
+          <div className="cs-quick-links-blob">
+            <span className="cs-quick-links-label">jump to a case study</span>
+            {[
+              { slug: 'linkedin', label: <>Enterprise GTM &<br />AI Agents</> },
+              { slug: 'netflix', label: 'Ask me live!' },
+              { slug: 'whova', label: 'Break the ice' },
+            ].map(({ slug, label }) => (
+              <Link
+                key={slug}
+                to={`/work/${slug}`}
+                className="cs-quick-btn"
+                onMouseEnter={() => {
+                  if (quickLinksRef.current) {
+                    const rect = quickLinksRef.current.getBoundingClientRect()
+                    setPreviewPos({ right: window.innerWidth - rect.left + 20, top: rect.top + rect.height / 2 })
+                  }
+                  setHoveredStudy(slug)
+                }}
+                onMouseLeave={() => setHoveredStudy(null)}
+              >
+                {label}
+              </Link>
+            ))}
+          </div>
+        </div>
+        {projects.map((project, i) => (
+          <div
+            key={project.slug}
+            className="cs-quick-preview"
+            style={{
+              position: 'fixed',
+              right: previewPos.right,
+              top: previewPos.top,
+              transform: 'translateY(-50%)',
+              opacity: hoveredStudy === project.slug ? 1 : 0,
+            }}
+          >
+            <Link
+              to={`/work/${project.slug}`}
+              className="work-card"
+              style={{ position: 'relative', clipPath: `url(#card-clip-${i})` }}
+            >
+              <svg className="work-card-border" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <path d={borderPaths[i % borderPaths.length]} fill="none" stroke="#1a1a1a" strokeWidth="2.5" strokeLinejoin="round" />
+              </svg>
+              <div className="work-card-preview">
+                {project.image && <img src={project.image} alt={project.title} className="work-card-preview-img" />}
+              </div>
+              <div className="work-card-body">
+                {project.company && <p className="work-card-company">{project.company}</p>}
+                <h3 className="work-card-title">{project.title}</h3>
+                <p className="work-card-desc">{project.description}</p>
+              </div>
+            </Link>
+          </div>
+        ))}
 
         <a href="#about" className="scroll-arrow">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
