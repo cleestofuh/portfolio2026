@@ -12,7 +12,7 @@ function LinkedInContent() {
             How might we reduce the cognitive and operational overhead of enterprise GTM work so reps can focus on the work that drives meaningful customer outcomes?
           </blockquote>
           <p className="cs-section-body">
-            As Lead Product Designer, I led the design of a single glass pane experience paired with AI agents. The vision is a unified surface that consolidates disparate data sources and offloads lower value-add tasks to agents working in the background. The projected productivity gains give reps the space to dedicate more time to strategic, high-impact work.
+            As Lead Product Designer, I led the vision for reimagining how humans and AI work together, building towards a unified AI-native workspace where humans and agents operate together seamlessly. The projected productivity gains give reps the space to dedicate more time to strategic, high-impact work.
           </p>
           <p className="cs-section-body">
             This work is ongoing and covered under NDA. If you want to hear more about the problem space, the design decisions, or what I shipped, I would love to walk you through it.
