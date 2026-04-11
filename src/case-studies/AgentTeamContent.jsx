@@ -47,25 +47,11 @@ function AgentTeamContent() {
               <span className="agent-tree-icon">📁</span>
               <span className="agent-tree-name">resources/</span>
             </div>
-            {[
-              { folder: 'design-systems/', files: ['component-library.md', 'usage-guidelines.md'] },
-              { folder: 'design-tokens/', files: ['color.md', 'typography.md', 'spacing.md', 'motion.md'] },
-              { folder: 'principles/', files: ['component-usage.md', 'token-application.md', 'design-principles.md'] },
-              { folder: 'templates/', files: ['research-brief.md', 'ux-spec.md', 'prototype-brief.md', 'accessibility-checklist.md', 'ideation-workshop.md', 'usecase-walkthrough.md'] },
-            ].map(({ folder, files }) => (
-              <div key={folder}>
-                <div className="agent-tree-row agent-tree-folder">
-                  <span className="agent-tree-indent agent-tree-indent--2" />
-                  <span className="agent-tree-icon">📁</span>
-                  <span className="agent-tree-name">{folder}</span>
-                </div>
-                {files.map(name => (
-                  <div className="agent-tree-row" key={name}>
-                    <span className="agent-tree-indent agent-tree-indent--3" />
-                    <span className="agent-tree-icon">📄</span>
-                    <span className="agent-tree-name">{name}</span>
-                  </div>
-                ))}
+            {['design-systems/', 'design-tokens/', 'principles/', 'templates/'].map(folder => (
+              <div className="agent-tree-row agent-tree-folder" key={folder}>
+                <span className="agent-tree-indent agent-tree-indent--2" />
+                <span className="agent-tree-icon">📁</span>
+                <span className="agent-tree-name">{folder}</span>
               </div>
             ))}
           </div>
