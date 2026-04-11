@@ -359,6 +359,7 @@ function App() {
             <span className="cs-quick-links-label">jump to a case study</span>
             {[
               { slug: 'linkedin', label: <>Enterprise GTM &<br />AI Agents</> },
+              { slug: 'agent-team', label: <>AI-Native<br />Design Workflow</> },
               { slug: 'netflix', label: 'Ask me live!' },
               { slug: 'whova', label: 'Break the ice' },
             ].map(({ slug, label }) => (
