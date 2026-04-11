@@ -23,9 +23,26 @@ html {
   overflow-x: hidden;
 }
 
+@keyframes blobMorph {
+  0%   { border-radius: 62% 38% 54% 46% / 44% 56% 44% 56%; }
+  16%  { border-radius: 42% 58% 38% 62% / 58% 44% 56% 42%; }
+  33%  { border-radius: 54% 46% 62% 38% / 56% 44% 46% 54%; }
+  50%  { border-radius: 38% 62% 46% 54% / 42% 58% 42% 58%; }
+  66%  { border-radius: 56% 44% 40% 60% / 52% 48% 56% 44%; }
+  83%  { border-radius: 48% 52% 58% 42% / 46% 54% 38% 62%; }
+  100% { border-radius: 62% 38% 54% 46% / 44% 56% 44% 56%; }
+}
+
 .blob {
   background-color: #ffffff;
-  transition: border-radius 0.6s ease;
+  animation: blobMorph 10s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blob {
+    animation: none;
+    border-radius: 62% 38% 54% 46% / 44% 56% 44% 56%;
+  }
 }
 
 

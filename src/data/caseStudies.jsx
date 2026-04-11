@@ -1,6 +1,7 @@
 import LinkedInContent from '../case-studies/LinkedInContent'
 import NetflixContent from '../case-studies/NetflixContent'
 import WhovaContent from '../case-studies/WhovaContent'
+import AgentTeamContent from '../case-studies/AgentTeamContent'
 
 const caseStudies = {
   linkedin: {
@@ -11,6 +12,15 @@ const caseStudies = {
     image: '/linkedin-logo.jpg',
     heroImage: '/linkedin/glass-pane.png',
     Content: LinkedInContent,
+  },
+
+  'agent-team': {
+    slug: 'agent-team',
+    company: 'LinkedIn',
+    title: 'AI-Native Design Workflow',
+    tagline: 'Reimagining the design workflow through agents and code, closing the gap between design handoff and implementation to own the full outcome of the experience.',
+    image: '/agents.png',
+    Content: AgentTeamContent,
   },
 
   netflix: {

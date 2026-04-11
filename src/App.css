@@ -377,6 +377,57 @@
   opacity: 0.4;
 }
 
+/* Agent tree */
+.agent-tree {
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-size: 0.875rem;
+  color: #1a1a1a;
+  background: #f7f7f5;
+  border-radius: 12px;
+  padding: 24px 28px;
+  margin-top: 24px;
+  line-height: 1.8;
+  display: inline-block;
+  min-width: 320px;
+}
+
+.agent-tree-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.agent-tree-root .agent-tree-name {
+  font-weight: 600;
+}
+
+.agent-tree-folder .agent-tree-name {
+  font-weight: 500;
+}
+
+.agent-tree-indent {
+  display: inline-block;
+  width: 20px;
+  flex-shrink: 0;
+}
+
+.agent-tree-indent--2 {
+  width: 40px;
+}
+
+.agent-tree-indent--3 {
+  width: 60px;
+}
+
+.agent-tree-icon {
+  font-size: 0.8125rem;
+  flex-shrink: 0;
+}
+
+.agent-tree-name {
+  color: #1a1a1a;
+}
+
 .cs-quick-preview {
   pointer-events: none;
   transition: opacity 0.15s ease;

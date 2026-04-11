@@ -22,6 +22,13 @@ export const projects = [
     image: '/linkedin-logo.jpg',
   },
   {
+    slug: 'agent-team',
+    company: 'LinkedIn',
+    title: 'AI-Native Design Workflow',
+    description: 'Reimagining the design workflow through agents and code, closing the gap between design handoff and implementation.',
+    image: '/agents.png',
+  },
+  {
     slug: 'netflix',
     company: 'Netflix',
     title: 'Ask me live!',

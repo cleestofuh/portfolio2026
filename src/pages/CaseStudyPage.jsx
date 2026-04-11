@@ -97,12 +97,11 @@ function CaseStudyPage() {
         </div>
 
         {/* Hero image */}
-        <div className="cs-hero-image cs-reveal" style={{ '--reveal-delay': '480ms' }}>
-          {study.heroImage
-            ? <img src={study.heroImage} alt={study.title} className="cs-hero-img" />
-            : <div className="cs-image-placeholder" />
-          }
-        </div>
+        {study.heroImage && (
+          <div className="cs-hero-image cs-reveal" style={{ '--reveal-delay': '480ms' }}>
+            <img src={study.heroImage} alt={study.title} className="cs-hero-img" />
+          </div>
+        )}
 
         {/* Case study content — unique per project */}
         <Content />

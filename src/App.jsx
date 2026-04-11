@@ -287,6 +287,44 @@ function App() {
     };
   }, []);
 
+  useEffect(() => {
+    const timeouts = new Map();
+    const active = new Set();
+
+    const handleMouseOver = (e) => {
+      const blob = e.target.closest('.blob');
+      if (!blob || active.has(blob)) return;
+      active.add(blob);
+      blob.getAnimations().forEach(anim => anim.updatePlaybackRate(3));
+      const t = setTimeout(() => {
+        blob.getAnimations().forEach(anim => anim.updatePlaybackRate(1));
+        timeouts.delete(blob);
+        active.delete(blob);
+      }, 800);
+      timeouts.set(blob, t);
+    };
+
+    const handleMouseOut = (e) => {
+      const blob = e.target.closest('.blob');
+      if (blob && !blob.contains(e.relatedTarget)) {
+        active.delete(blob);
+        if (timeouts.has(blob)) {
+          clearTimeout(timeouts.get(blob));
+          timeouts.delete(blob);
+        }
+        blob.getAnimations().forEach(anim => anim.updatePlaybackRate(1));
+      }
+    };
+
+    document.addEventListener('mouseover', handleMouseOver);
+    document.addEventListener('mouseout', handleMouseOut);
+    return () => {
+      document.removeEventListener('mouseover', handleMouseOver);
+      document.removeEventListener('mouseout', handleMouseOut);
+      timeouts.forEach(clearTimeout);
+    };
+  }, []);
+
   return (
     <>
       <Navbar />
