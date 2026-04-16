@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLocation, Link } from 'react-router-dom'
+import { useTheme } from './context/ThemeContext'
 import './App.css'
 import Navbar from './components/Navbar'
 import Ripples from './components/Ripples'
@@ -7,6 +8,11 @@ import Blurb from './components/Blurb'
 import Work, { borderPaths, projects } from './components/Work'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
+import GridNavbar from './components/grid/GridNavbar'
+import GridHero from './components/grid/GridHero'
+import GridWork from './components/grid/GridWork'
+import GridContact from './components/grid/GridContact'
+import ThemeToggle from './components/ThemeToggle'
 
 function spawnRippleAt(container, cx, cy, sizes = [80, 140, 200]) {
   const rings = sizes.map((size, i) => ({ delay: i * 150, size }));
@@ -57,6 +63,7 @@ function getCenterRelativeTo(el, ancestor) {
 }
 
 function App() {
+  const { theme } = useTheme();
   const heroRef = useRef(null);
   const pageRef = useRef(null);
   const quickLinksRef = useRef(null);
@@ -76,6 +83,7 @@ function App() {
 
 
   useEffect(() => {
+    if (theme !== 'freg') return;
     const container = heroRef.current;
     if (!container) return;
 
@@ -86,9 +94,10 @@ function App() {
     }, 600);
 
     return () => clearTimeout(timeout);
-  }, []);
+  }, [theme]);
 
   useEffect(() => {
+    if (theme !== 'freg') return;
     const container = heroRef.current;
     if (!container) return;
 
@@ -245,9 +254,10 @@ function App() {
     }
 
     return () => cleanups.forEach(fn => fn());
-  }, []);
+  }, [theme]);
 
   useEffect(() => {
+    if (theme !== 'freg') return;
     const targets = [
       ...document.querySelectorAll('.title-letter'),
       ...document.querySelectorAll('.subtitle-word'),
@@ -256,7 +266,7 @@ function App() {
     ];
     const cleanups = targets.map(el => setupHoverShift(el, 5));
     return () => cleanups.forEach(fn => fn());
-  }, []);
+  }, [theme]);
 
   useEffect(() => {
     const timeouts = [];
@@ -285,9 +295,10 @@ function App() {
       observer.disconnect();
       timeouts.forEach(clearTimeout);
     };
-  }, []);
+  }, [theme]);
 
   useEffect(() => {
+    if (theme !== 'freg') return;
     const timeouts = new Map();
     const active = new Set();
 
@@ -323,10 +334,32 @@ function App() {
       document.removeEventListener('mouseout', handleMouseOut);
       timeouts.forEach(clearTimeout);
     };
-  }, []);
+  }, [theme]);
+
+  if (theme === 'grid') {
+    return (
+      <>
+        <ThemeToggle />
+        <GridNavbar />
+        <div className="grid-canvas">
+          <GridHero />
+          <div className="grid-canvas-right" id="work">
+            <GridWork />
+          </div>
+          <div className="grid-canvas-contact" id="contact">
+            <GridContact />
+          </div>
+        </div>
+        <footer className="grid-footer">
+          &copy; {new Date().getFullYear()} Chris Lo
+        </footer>
+      </>
+    )
+  }
 
   return (
     <>
+      <ThemeToggle />
       <Navbar />
       <div className="page-ripple-zone" ref={pageRef}>
       <Ripples containerRef={pageRef} />

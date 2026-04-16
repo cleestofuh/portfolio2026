@@ -1,61 +1,67 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import resumePdf from '../assets/Christopher Lo Resume.pdf'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { useTheme } from '../context/ThemeContext'
+import GridNavbar from './grid/GridNavbar'
 import './Navbar.css'
 
 function Navbar({ forceVisible = false }) {
-  const [visible, setVisible] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const logoRef = useRef(null);
-  const jumpingRef = useRef(false);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const isHome = location.pathname === '/';
+  const { theme } = useTheme()
+  const [visible, setVisible] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const logoRef = useRef(null)
+  const jumpingRef = useRef(false)
+  const navigate = useNavigate()
+  const location = useLocation()
+  const isHome = location.pathname === '/'
 
   useEffect(() => {
     const handleScroll = () => {
-      const vh = window.innerHeight;
-      setVisible(window.scrollY > vh * 0.8);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+      const vh = window.innerHeight
+      setVisible(window.scrollY > vh * 0.8)
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
-  // Close menu on route change
-  useEffect(() => { setMenuOpen(false); }, [location]);
+  useEffect(() => { setMenuOpen(false) }, [location])
 
   const handleLogoClick = useCallback((e) => {
-    e.preventDefault();
-    setMenuOpen(false);
-    if (jumpingRef.current) return;
-    const img = logoRef.current;
-    if (!img) return;
+    e.preventDefault()
+    setMenuOpen(false)
+    if (jumpingRef.current) return
+    const img = logoRef.current
+    if (!img) return
 
-    jumpingRef.current = true;
-    img.classList.remove('navbar-logo-jump');
-    void img.offsetWidth;
-    img.classList.add('navbar-logo-jump');
+    jumpingRef.current = true
+    img.classList.remove('navbar-logo-jump')
+    void img.offsetWidth
+    img.classList.add('navbar-logo-jump')
 
     setTimeout(() => {
-      img.classList.remove('navbar-logo-jump');
-      jumpingRef.current = false;
+      img.classList.remove('navbar-logo-jump')
+      jumpingRef.current = false
       if (isHome) {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: 'smooth' })
       } else {
-        navigate('/');
+        navigate('/')
       }
-    }, 450);
-  }, [isHome, navigate]);
+    }, 450)
+  }, [isHome, navigate])
 
   const handleHashLink = useCallback((e, hash) => {
-    e.preventDefault();
-    setMenuOpen(false);
+    e.preventDefault()
+    setMenuOpen(false)
     if (isHome) {
-      document.querySelector(hash)?.scrollIntoView({ behavior: 'smooth' });
+      document.querySelector(hash)?.scrollIntoView({ behavior: 'smooth' })
     } else {
-      navigate('/' + hash);
+      navigate('/' + hash)
     }
-  }, [isHome, navigate]);
+  }, [isHome, navigate])
+
+  if (theme === 'grid') {
+    return <GridNavbar forceVisible={forceVisible} />
+  }
 
   return (
     <header className={`navbar ${visible || forceVisible ? 'navbar--visible' : ''}`}>

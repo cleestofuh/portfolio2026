@@ -1,3 +1,6 @@
+@import './grid-theme.css';
+@import './components/grid/grid.css';
+
 * {
   margin: 0;
   padding: 0;

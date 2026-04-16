@@ -1,6 +1,7 @@
 import { useParams, Link, useLocation } from 'react-router-dom'
 import { useEffect, useState, useRef } from 'react'
 import Navbar from '../components/Navbar'
+import ThemeToggle from '../components/ThemeToggle'
 import Footer from '../components/Footer'
 import caseStudies from '../data/caseStudies.jsx'
 import './CaseStudyPage.css'
@@ -30,6 +31,7 @@ function CaseStudyPage() {
   if (!study) {
     return (
       <>
+        <ThemeToggle />
         <Navbar forceVisible />
         <main className="cs-not-found">
           <p>case study not found.</p>
@@ -54,6 +56,7 @@ function CaseStudyPage() {
 
   return (
     <>
+      <ThemeToggle />
       <Navbar forceVisible />
       <main className="cs-page">
 

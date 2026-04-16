@@ -1,0 +1,322 @@
+/* ================================================
+   GRID THEME — Global overrides for shared pages
+   (Case studies, About page, modals, etc.)
+   ================================================ */
+
+/* --- Global --- */
+[data-theme="grid"] body {
+  background-color: #f5f5f5;
+  background-image: radial-gradient(circle, #d4d4d4 1px, transparent 1px);
+  background-size: 24px 24px;
+  font-family: 'Inter', sans-serif;
+}
+
+[data-theme="grid"] * {
+  text-transform: none !important;
+}
+
+/* --- Kill all organic elements --- */
+[data-theme="grid"] .blob {
+  animation: none;
+  border-radius: 4px;
+  border: 1px solid #e0e0e0;
+}
+
+[data-theme="grid"] .ripple-ring {
+  display: none !important;
+}
+
+[data-theme="grid"] .reveal {
+  transition-duration: 0.25s;
+}
+
+/* --- Navbar (for case study / about pages using Navbar component) --- */
+[data-theme="grid"] .navbar {
+  background-color: rgba(44, 44, 44, 0.97) !important;
+  border-bottom-color: #3d3d3d;
+}
+
+[data-theme="grid"] .navbar--visible {
+  background-color: rgba(44, 44, 44, 0.97) !important;
+}
+
+[data-theme="grid"] .navbar-logo-name {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #fff;
+}
+
+[data-theme="grid"] .navbar-link {
+  font-family: 'Inter', sans-serif;
+  color: #ccc;
+}
+
+[data-theme="grid"] .navbar-link:hover {
+  opacity: 1;
+  color: #fff;
+}
+
+[data-theme="grid"] .navbar-logo-img {
+  display: none;
+}
+
+[data-theme="grid"] .navbar-hamburger span {
+  background: #fff;
+}
+
+[data-theme="grid"] .navbar-mobile {
+  background: rgba(44, 44, 44, 0.97);
+}
+
+[data-theme="grid"] .navbar-mobile-link {
+  color: #ccc;
+  font-family: 'Inter', sans-serif;
+}
+
+/* --- Case study pages --- */
+[data-theme="grid"] .cs-page {
+  background-color: #f5f5f5;
+  background-image: radial-gradient(circle, #d4d4d4 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+[data-theme="grid"] .cs-hero {
+  position: relative;
+}
+
+
+[data-theme="grid"] .cs-company,
+[data-theme="grid"] .cs-title,
+[data-theme="grid"] .cs-tagline,
+[data-theme="grid"] .cs-section-heading,
+[data-theme="grid"] .cs-section-body,
+[data-theme="grid"] .cs-section-label,
+[data-theme="grid"] .cs-meta-label,
+[data-theme="grid"] .cs-meta-value,
+[data-theme="grid"] .cs-impact-label,
+[data-theme="grid"] .cs-impact-blurb,
+[data-theme="grid"] .cs-back,
+[data-theme="grid"] .cs-callout,
+[data-theme="grid"] .cs-insight,
+[data-theme="grid"] .cs-metric-label,
+[data-theme="grid"] .cs-metric-value,
+[data-theme="grid"] .cs-pdf-link,
+[data-theme="grid"] .cs-img-caption,
+[data-theme="grid"] .cs-skip-link,
+[data-theme="grid"] .cs-more-btn,
+[data-theme="grid"] .cs-more-item-company,
+[data-theme="grid"] .cs-more-item-title {
+  font-family: 'Inter', sans-serif;
+}
+
+[data-theme="grid"] .cs-title {
+  letter-spacing: -0.02em;
+}
+
+[data-theme="grid"] .cs-hero-img {
+  border-radius: 4px;
+}
+
+[data-theme="grid"] .cs-callout {
+  border-left-color: #A259FF;
+}
+
+[data-theme="grid"] .cs-impact-bar {
+  border-radius: 4px;
+  border: 1px solid #e0e0e0;
+  background: #fff;
+}
+
+[data-theme="grid"] .cs-pdf-link {
+  border-bottom-color: #0C8CE9;
+  color: #0C8CE9;
+}
+
+[data-theme="grid"] .cs-inline-link {
+  color: #0C8CE9;
+}
+
+[data-theme="grid"] .cs-section-img {
+  border-radius: 4px;
+}
+
+[data-theme="grid"] .cs-more-dropdown {
+  border-radius: 4px;
+}
+
+[data-theme="grid"] .cs-more-item {
+  border-radius: 4px;
+}
+
+/* Case study sections — frame labels */
+[data-theme="grid"] .cs-section {
+  position: relative;
+}
+
+[data-theme="grid"] .cs-quick-links-blob {
+  border-radius: 4px;
+  animation: none;
+  border: 1px solid #e0e0e0;
+}
+
+[data-theme="grid"] .cs-quick-links-label,
+[data-theme="grid"] .cs-quick-btn {
+  font-family: 'Inter', sans-serif;
+}
+
+/* --- About page --- */
+[data-theme="grid"] .about-page {
+  background-color: #f5f5f5;
+  background-image: radial-gradient(circle, #d4d4d4 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+[data-theme="grid"] .about-page-photo-img {
+  border-radius: 4px;
+  transition: none;
+}
+
+[data-theme="grid"] .about-page-photo-img:hover {
+  border-radius: 4px;
+}
+
+[data-theme="grid"] .about-page-name {
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -0.03em;
+}
+
+[data-theme="grid"] .about-page-role {
+  font-family: 'Inter', sans-serif;
+}
+
+[data-theme="grid"] .about-page-bio p {
+  font-family: 'Inter', sans-serif;
+}
+
+[data-theme="grid"] .about-page-link {
+  font-family: 'Inter', sans-serif;
+  color: #0C8CE9;
+}
+
+[data-theme="grid"] .about-page-link-dot {
+  font-family: 'Inter', sans-serif;
+}
+
+[data-theme="grid"] .about-page-skills-heading {
+  font-family: 'Inter', sans-serif;
+}
+
+[data-theme="grid"] .about-page-skills-list li {
+  font-family: 'Inter', sans-serif;
+}
+
+[data-theme="grid"] .about-page-outside-text {
+  font-family: 'Inter', sans-serif;
+}
+
+[data-theme="grid"] .about-page-outside-img {
+  border-radius: 4px !important;
+  transition: none !important;
+}
+
+[data-theme="grid"] .about-page-outside-img:hover {
+  border-radius: 4px !important;
+}
+
+[data-theme="grid"] .about-page-outside-figure figcaption {
+  font-family: 'Inter', sans-serif;
+}
+
+/* About page grid layout */
+[data-theme="grid"] .about-page--grid .about-page-inner {
+  position: relative;
+}
+
+[data-theme="grid"] .about-page--grid .about-page-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-top: 0;
+}
+
+/* Kill page-enter animations that override drag transforms */
+[data-theme="grid"] .about-page--grid .about-page-photo,
+[data-theme="grid"] .about-page--grid .about-page-name,
+[data-theme="grid"] .about-page--grid .about-page-role,
+[data-theme="grid"] .about-page--grid .about-page-links,
+[data-theme="grid"] .about-page--grid .about-page-bio,
+[data-theme="grid"] .about-page--grid .about-page-skills,
+[data-theme="grid"] .about-page--grid .about-page-outside,
+[data-theme="grid"] .about-page--grid .about-grid-frame {
+  animation: none !important;
+  opacity: 1 !important;
+}
+
+/* About page grid frames */
+[data-theme="grid"] .about-grid-frame {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 24px;
+  overflow: visible;
+  position: relative;
+  margin: 0;
+}
+
+/* Reset child margins so flex gap controls spacing */
+[data-theme="grid"] .about-page--grid .about-page-bio {
+  margin-bottom: 0;
+}
+
+[data-theme="grid"] .about-page--grid .about-page-outside {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+[data-theme="grid"] .about-grid-frame.about-page-photo {
+  padding: 0;
+  overflow: hidden;
+}
+
+[data-theme="grid"] .about-grid-frame.about-page-outside-figure {
+  padding: 0;
+  overflow: hidden;
+  background: transparent;
+  border: none;
+}
+
+/* --- Footer --- */
+[data-theme="grid"] .site-footer {
+  font-family: 'Inter', sans-serif;
+  background-color: #f5f5f5;
+  border-top: 1px solid #e0e0e0;
+  color: #999;
+}
+
+[data-theme="grid"] .site-footer--green {
+  background-color: #f5f5f5;
+  color: #999;
+}
+
+[data-theme="grid"] .rocks-divider {
+  display: none;
+}
+
+/* --- Modals --- */
+[data-theme="grid"] .image-modal-img {
+  border-radius: 4px;
+}
+
+[data-theme="grid"] .video-modal-video {
+  border-radius: 4px;
+}
+
+/* --- Agent tree --- */
+[data-theme="grid"] .agent-tree {
+  font-family: 'Inter', monospace;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background: #fff;
+}
