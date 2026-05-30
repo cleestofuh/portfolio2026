@@ -25,7 +25,7 @@ createRoot(document.getElementById('root')).render(
           <Route path="/" element={<App />} />
           <Route path="/about" element={<About />} />
           <Route path="/work/:slug" element={<CaseStudyPage />} />
-          <Route path="/experiments/text-bulge" element={<TextBulge />} />
+          <Route path="/experiments/text" element={<TextBulge />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
