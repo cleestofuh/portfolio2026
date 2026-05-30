@@ -1,0 +1,233 @@
+.tb-shell {
+  position: relative;
+  overflow: hidden;
+  width: 100vw;
+  min-height: 100vh;
+  background: var(--bg, #0f0f0f);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8vw;
+  box-sizing: border-box;
+  /* Let finger drags drive the effect instead of scrolling/panning the page. */
+  touch-action: none;
+}
+
+/* ---- Background layers (subtle, per-effect, cursor-reactive) ---------- *
+ * ::before = a soft pool of light/colour that follows the cursor.
+ * ::after  = an ambient texture/pattern that hints at the effect's vibe.
+ * Both sit behind the text (z-index 0). --mx / --my come from JS.         */
+.tb-shell::before,
+.tb-shell::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.tb-shell::before {
+  background: radial-gradient(
+    var(--glow-size, 300px) circle at var(--mx, 50%) var(--my, 50%),
+    var(--glow, rgba(255, 255, 255, 0.05)),
+    transparent 72%
+  );
+}
+
+/* ---- Per-effect theme tokens (also read by the wipe panel) ------------ *
+ * --bg = full background, --glow/--glow-size = cursor pool, --ink = text. */
+[data-effect='magnetic'] {
+  --bg:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 3px),
+    linear-gradient(160deg, #cbd0d5 0%, #9298a1 55%, #b6bcc3 100%);
+  --glow: rgba(255, 255, 255, 0.35);
+  --glow-size: 320px;
+  --ink: #262a2e;
+}
+[data-effect='jelly'] {
+  --bg: linear-gradient(160deg, #ff4d9d 0%, #ff7a59 58%, #ffd24d 100%);
+  --glow: rgba(255, 255, 255, 0.28);
+  --ink: #ffffff;
+}
+[data-effect='sand'] {
+  --bg: linear-gradient(180deg, #ead6ad 0%, #d8b483 45%, #b88a52 100%);
+  --glow: rgba(255, 244, 214, 0.4);
+  --glow-size: 340px;
+  --ink: #4a3a24;
+}
+[data-effect='gravity'] {
+  --bg: radial-gradient(140% 120% at 50% 30%, #16182b 0%, #05060c 70%);
+  --glow: rgba(110, 130, 220, 0.12);
+  --glow-size: 420px;
+  --ink: #eef0f6;
+}
+[data-effect='spotlight'] {
+  --bg: #08080a;
+  --glow: rgba(255, 232, 175, 0.13);
+  --glow-size: 360px;
+  --ink: #4a4842; /* JS overrides per character */
+}
+[data-effect='refraction'] {
+  --bg: linear-gradient(160deg, #e7edf2 0%, #cfd9e2 60%, #dde6ec 100%);
+  --glow: rgba(150, 210, 255, 0.22);
+  --ink: #1b2026;
+}
+
+/* ---- Per-effect ambient textures (shell only) ------------------------- */
+.tb-shell[data-effect='magnetic']::after {
+  background: repeating-radial-gradient(
+    circle at var(--mx, 50%) var(--my, 50%),
+    rgba(40, 50, 62, 0.06) 0 1px, transparent 1px 24px);
+}
+.tb-shell[data-effect='jelly']::after {
+  background:
+    radial-gradient(38% 38% at 30% 38%, rgba(255, 255, 255, 0.16), transparent 70%),
+    radial-gradient(42% 42% at 70% 62%, rgba(255, 90, 170, 0.18), transparent 70%);
+  animation: tb-blob 13s ease-in-out infinite alternate;
+}
+.tb-shell[data-effect='sand']::after {
+  background:
+    repeating-linear-gradient(115deg, rgba(120, 90, 50, 0.06) 0 2px, transparent 2px 6px),
+    linear-gradient(180deg, rgba(255, 240, 210, 0.18), transparent 45%);
+}
+.tb-shell[data-effect='gravity']::after {
+  background:
+    repeating-radial-gradient(
+      circle at var(--mx, 50%) var(--my, 50%),
+      rgba(120, 140, 230, 0.05) 0 1px, transparent 1px 30px),
+    radial-gradient(
+      460px circle at var(--mx, 50%) var(--my, 50%),
+      rgba(0, 0, 0, 0.45), transparent 70%);
+}
+.tb-shell[data-effect='spotlight']::after {
+  background: radial-gradient(120% 120% at 50% 50%, transparent 38%, rgba(0, 0, 0, 0.6));
+}
+.tb-shell[data-effect='refraction']::after {
+  background: conic-gradient(
+    from 0deg at var(--mx, 50%) var(--my, 50%),
+    rgba(255, 40, 120, 0.05), rgba(60, 180, 255, 0.05),
+    rgba(180, 80, 255, 0.05), rgba(255, 40, 120, 0.05));
+  animation: tb-hue 9s linear infinite;
+}
+
+/* ---- Directional wipe panel (theme transition) ----------------------- *
+ * Shows the incoming theme's --bg and slides across in tab-order
+ * direction; the underlying effect is swapped while it's covered.        */
+.tb-wipe {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: var(--bg, #0f0f0f);
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.25);
+  will-change: transform;
+}
+.tb-wipe.from-right { animation: tb-wipe-right 640ms cubic-bezier(0.76, 0, 0.24, 1) forwards; }
+.tb-wipe.from-left  { animation: tb-wipe-left  640ms cubic-bezier(0.76, 0, 0.24, 1) forwards; }
+
+@keyframes tb-wipe-right { from { transform: translateX(100%); }  to { transform: translateX(-101%); } }
+@keyframes tb-wipe-left  { from { transform: translateX(-100%); } to { transform: translateX(101%); } }
+
+@keyframes tb-blob {
+  from { transform: translate3d(-3%, -2%, 0) scale(1); }
+  to   { transform: translate3d(3%, 2%, 0) scale(1.12); }
+}
+@keyframes tb-hue {
+  to { filter: hue-rotate(360deg); }
+}
+
+.tb-paragraph {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+  margin: 0;
+  font-family: 'DM Sans', sans-serif;
+  font-size: clamp(28px, 4.4vw, 52px);
+  line-height: 1.5;
+  font-weight: 500;
+  color: var(--ink, #f0ece3);
+  text-align: left;
+  cursor: default; /* real, selectable text */
+}
+
+/* Keep each word intact so per-character spans never wrap mid-word. */
+.tb-word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.tb-char {
+  display: inline-block;
+  will-change: transform;
+  transform-origin: 50% 50%;
+  /* Only color/shadow get eased — transforms are JS spring-driven and must
+     NOT be transitioned or they'd lag and fight the physics. */
+  transition: color 220ms ease-out, text-shadow 180ms ease-out;
+}
+
+/* Control bar — glassy toolbar that stays legible on any theme */
+.tb-controls {
+  position: fixed;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-wrap: nowrap;
+  /* flex-start (not center) so when the row overflows its max-width the
+     first tab stays at scrollLeft:0 and is reachable. When it fits, the
+     shrink-to-fit nav is content-width and centered via translateX. */
+  justify-content: flex-start;
+  gap: 6px;
+  z-index: 10;
+  padding: 6px;
+  background: rgba(18, 18, 20, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  max-width: calc(100vw - 24px);
+  overflow-x: auto;
+  /* Allow horizontal swipe to reach tabs that overflow on small screens. */
+  touch-action: pan-x;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.tb-controls::-webkit-scrollbar {
+  display: none;
+}
+
+.tb-btn {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: #d8d4cc;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 8px 16px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.tb-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.tb-btn.is-active {
+  background: #fff;
+  color: #16161a;
+  font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tb-char { transition: none; }
+  .tb-shell[data-effect='jelly']::after,
+  .tb-shell[data-effect='refraction']::after { animation: none; }
+  .tb-wipe { animation-duration: 1ms !important; }
+}

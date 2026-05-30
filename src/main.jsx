@@ -6,6 +6,7 @@ import './index.css'
 import App from './App.jsx'
 import About from './pages/About.jsx'
 import CaseStudyPage from './pages/CaseStudyPage.jsx'
+import TextBulge from './experiments/002-text-bulge/index.jsx'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -24,6 +25,7 @@ createRoot(document.getElementById('root')).render(
           <Route path="/" element={<App />} />
           <Route path="/about" element={<About />} />
           <Route path="/work/:slug" element={<CaseStudyPage />} />
+          <Route path="/experiments/text-bulge" element={<TextBulge />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
