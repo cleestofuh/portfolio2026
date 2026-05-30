@@ -34,6 +34,19 @@
   );
 }
 
+/* Sand snake-trail canvas: above the grain texture, below the text.
+   Stays full-size (transparent) for other effects so it measures correctly. */
+.tb-trail {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* canvas is a replaced element — inset:0 won't stretch it, so size explicitly */
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
 /* ---- Per-effect theme tokens (also read by the wipe panel) ------------ *
  * --bg = full background, --glow/--glow-size = cursor pool, --ink = text. */
 [data-effect='magnetic'] {
@@ -51,12 +64,15 @@
 }
 [data-effect='sand'] {
   --bg: linear-gradient(180deg, #ead6ad 0%, #d8b483 45%, #b88a52 100%);
-  --glow: rgba(255, 244, 214, 0.4);
+  --glow: transparent;   /* no light pool — the cursor leaves a snake trail instead */
   --glow-size: 340px;
   --ink: #4a3a24;
 }
 [data-effect='gravity'] {
-  --bg: radial-gradient(140% 120% at 50% 30%, #16182b 0%, #05060c 70%);
+  --bg:
+    radial-gradient(120% 100% at 72% 18%, rgba(86, 58, 132, 0.35), transparent 55%),
+    radial-gradient(110% 90% at 20% 80%, rgba(30, 70, 120, 0.30), transparent 55%),
+    radial-gradient(140% 120% at 50% 30%, #12132a 0%, #04050b 72%);
   --glow: rgba(110, 130, 220, 0.12);
   --glow-size: 420px;
   --ink: #eef0f6;
@@ -68,9 +84,12 @@
   --ink: #4a4842; /* JS overrides per character */
 }
 [data-effect='refraction'] {
-  --bg: linear-gradient(160deg, #e7edf2 0%, #cfd9e2 60%, #dde6ec 100%);
-  --glow: rgba(150, 210, 255, 0.22);
-  --ink: #1b2026;
+  /* Dark theater with a glowing screen behind the text. */
+  --bg:
+    radial-gradient(58% 42% at 50% 40%, rgba(240, 235, 220, 0.18), transparent 72%),
+    linear-gradient(180deg, #0b0b12 0%, #050509 100%);
+  --glow: rgba(120, 190, 255, 0.16);
+  --ink: #f0f1f5;
 }
 
 /* ---- Per-effect ambient textures (shell only) ------------------------- */
@@ -86,27 +105,71 @@
   animation: tb-blob 13s ease-in-out infinite alternate;
 }
 .tb-shell[data-effect='sand']::after {
+  /* Two offset dot fields at different scales read as scattered grains. */
   background:
-    repeating-linear-gradient(115deg, rgba(120, 90, 50, 0.06) 0 2px, transparent 2px 6px),
+    radial-gradient(rgba(120, 90, 50, 0.10) 0.5px, transparent 1.2px),
+    radial-gradient(rgba(90, 60, 30, 0.08) 0.5px, transparent 1.2px),
     linear-gradient(180deg, rgba(255, 240, 210, 0.18), transparent 45%);
+  background-size: 7px 7px, 11px 11px, 100% 100%;
+  background-position: 0 0, 3px 4px, 0 0;
 }
 .tb-shell[data-effect='gravity']::after {
   background:
-    repeating-radial-gradient(
-      circle at var(--mx, 50%) var(--my, 50%),
-      rgba(120, 140, 230, 0.05) 0 1px, transparent 1px 30px),
+    /* event horizon: light is swallowed into black toward the cursor */
     radial-gradient(
       460px circle at var(--mx, 50%) var(--my, 50%),
-      rgba(0, 0, 0, 0.45), transparent 70%);
+      rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.55) 11%, transparent 64%),
+    /* accretion disk: concentric rings swirling the core */
+    repeating-radial-gradient(
+      circle at var(--mx, 50%) var(--my, 50%),
+      rgba(185, 205, 255, 0.12) 0 1px,
+      transparent 1px 17px),
+    /* straight streaks flung out from the core, slowly spinning */
+    repeating-conic-gradient(
+      from var(--tb-spin, 0deg) at var(--mx, 50%) var(--my, 50%),
+      rgba(150, 175, 255, 0.13) 0deg 1.2deg,
+      transparent 1.2deg 11deg),
+    /* scattered starfield, two densities for depth */
+    radial-gradient(rgba(255, 255, 255, 0.85) 0.7px, transparent 1.4px),
+    radial-gradient(rgba(190, 205, 255, 0.65) 0.6px, transparent 1.3px);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 130px 130px, 73px 91px;
+  background-position: 0 0, 0 0, 0 0, 0 0, 37px 61px;
+  animation: tb-spin 22s linear infinite;
 }
 .tb-shell[data-effect='spotlight']::after {
-  background: radial-gradient(120% 120% at 50% 50%, transparent 38%, rgba(0, 0, 0, 0.6));
+  background:
+    /* cap the beam at the cursor: no light travels past the spotlight */
+    radial-gradient(
+      circle at var(--beam-ox, 50%) var(--beam-oy, 40px),
+      transparent 0,
+      transparent calc(var(--beam-len, 120vh) - 70px),
+      rgba(8, 8, 10, 0.97) var(--beam-len, 120vh)),
+    /* shaft of light beaming down from the Spotlight tab toward the cursor */
+    conic-gradient(
+      from calc(var(--beam-angle, 180deg) - 9deg) at var(--beam-ox, 50%) var(--beam-oy, 40px),
+      transparent 0deg,
+      rgba(255, 240, 205, 0.12) 3deg,
+      rgba(255, 248, 228, 0.34) 9deg,
+      rgba(255, 240, 205, 0.12) 15deg,
+      transparent 18deg),
+    /* the rest stays in shadow */
+    radial-gradient(120% 120% at 50% 50%, transparent 38%, rgba(0, 0, 0, 0.6));
 }
 .tb-shell[data-effect='refraction']::after {
-  background: conic-gradient(
-    from 0deg at var(--mx, 50%) var(--my, 50%),
-    rgba(255, 40, 120, 0.05), rgba(60, 180, 255, 0.05),
-    rgba(180, 80, 255, 0.05), rgba(255, 40, 120, 0.05));
+  background:
+    /* anaglyph 3D-glasses shimmer following the cursor */
+    conic-gradient(
+      from 0deg at var(--mx, 50%) var(--my, 50%),
+      rgba(255, 40, 120, 0.06), rgba(60, 180, 255, 0.06),
+      rgba(180, 80, 255, 0.06), rgba(255, 40, 120, 0.06)),
+    /* a row of theater seat-backs silhouetted along the bottom */
+    radial-gradient(ellipse 26px 38px at 50% 100%,
+      rgba(0, 0, 0, 0.6) 0 58%, transparent 60%),
+    /* cinema vignette */
+    radial-gradient(125% 120% at 50% 44%, transparent 52%, rgba(0, 0, 0, 0.55));
+  background-size: 100% 100%, 54px 130px, 100% 100%;
+  background-position: 0 0, center bottom, 0 0;
+  background-repeat: no-repeat, repeat-x, no-repeat;
   animation: tb-hue 9s linear infinite;
 }
 
@@ -134,6 +197,16 @@
 }
 @keyframes tb-hue {
   to { filter: hue-rotate(360deg); }
+}
+
+/* Registered so the angle interpolates smoothly (drives the black-hole spokes). */
+@property --tb-spin {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+@keyframes tb-spin {
+  to { --tb-spin: 360deg; }
 }
 
 .tb-paragraph {
@@ -228,6 +301,7 @@
 @media (prefers-reduced-motion: reduce) {
   .tb-char { transition: none; }
   .tb-shell[data-effect='jelly']::after,
+  .tb-shell[data-effect='gravity']::after,
   .tb-shell[data-effect='refraction']::after { animation: none; }
   .tb-wipe { animation-duration: 1ms !important; }
 }

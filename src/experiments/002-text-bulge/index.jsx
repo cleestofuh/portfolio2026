@@ -103,7 +103,7 @@ const EFFECTS = [
   },
   {
     id: 'gravity',
-    label: 'Gravity well',
+    label: 'Gravity',
     text:
       'Move your cursor near the words. Each one bends toward it, sinking ' +
       'inward like matter pulled into a gravity well.',
@@ -138,15 +138,34 @@ const EFFECTS = [
       'wake up. The rest stay in shadow.',
     apply(c, env) {
       const R = 170
+      const HALF = 9 * Math.PI / 180        // beam cone half-angle (matches CSS wedge)
       let lit = 0
       if (env.active) {
+        // The bright pool right at the cursor.
         const dist = Math.hypot(c.cx - env.mx, c.cy - env.my)
         if (dist < R) lit = 1 - dist / R
+
+        // Anything the beam itself sweeps over: inside the cone from the
+        // Spotlight tab to the cursor, and not past the cursor.
+        const cdx = env.mx - env.bx, cdy = env.my - env.by   // tab -> cursor
+        const beamLen = Math.hypot(cdx, cdy)
+        const pdx = c.cx - env.bx, pdy = c.cy - env.by        // tab -> letter
+        const charDist = Math.hypot(pdx, pdy)
+        if (beamLen > 1 && charDist > 1 && charDist <= beamLen + R * 0.5) {
+          const cos = (cdx * pdx + cdy * pdy) / (beamLen * charDist)
+          const ang = Math.acos(Math.min(1, Math.max(-1, cos)))
+          if (ang < HALF) {
+            const edge = 1 - ang / HALF             // brighter toward the beam's spine
+            // Full along the shaft, easing off just past the cursor tip.
+            const tail = charDist <= beamLen ? 1 : 1 - (charDist - beamLen) / (R * 0.5)
+            lit = Math.max(lit, edge * tail)
+          }
+        }
       }
       const e = lit * lit                  // sharper edge
-      const r = Math.round(74 + (245 - 74) * e)
-      const g = Math.round(72 + (239 - 72) * e)
-      const b = Math.round(66 + (226 - 66) * e)
+      const r = Math.round(74 + (255 - 74) * e)
+      const g = Math.round(72 + (255 - 72) * e)
+      const b = Math.round(66 + (255 - 66) * e)
       c.el.style.color = `rgb(${r},${g},${b})`
       c.el.style.textShadow = e > 0.02
         ? `0 0 ${(e * 22).toFixed(1)}px rgba(255,238,200,${(e * 0.85).toFixed(2)})`
@@ -155,7 +174,7 @@ const EFFECTS = [
   },
   {
     id: 'refraction',
-    label: 'Refraction',
+    label: '3D',
     text:
       'Glide your cursor over the text. It bows and splits into colour, as if ' +
       'you are reading through a pane of warped glass.',
@@ -213,6 +232,8 @@ export default function TextBulge() {
   const mouseRef = useRef({ x: -9999, y: -9999, active: false })
   const rafRef = useRef(null)
   const measureRef = useRef(() => {})
+  const trailRef = useRef(null)                   // sand snake-trail canvas
+  const beamOriginRef = useRef({ x: 0, y: 40 })   // Spotlight tab anchor
   const activeIdRef = useRef(EFFECTS[0].id)
   const transitioningRef = useRef(false)
   const timersRef = useRef([])
@@ -242,8 +263,50 @@ export default function TextBulge() {
           seed: Math.random(),
         }
       })
+      // Anchor the spotlight beam to the actual Spotlight tab.
+      const tab = document.querySelector('.tb-controls [data-effect-id="spotlight"]')
+      if (tab) {
+        const tr = tab.getBoundingClientRect()
+        beamOriginRef.current = { x: tr.left + tr.width / 2, y: tr.bottom }
+      }
     }
     measureRef.current = measure
+
+    // Sand "snake trail": a darker-brown groove drawn on a canvas that
+    // fades back into the sand over a couple of seconds.
+    const canvas = trailRef.current
+    const ctx = canvas?.getContext('2d')
+    let trailW = 0, trailH = 0
+    let trailLeft = 0, trailTop = 0   // canvas position, to map cursor into canvas space
+    const trailPts = []               // recent cursor points: { x, y, t }
+    const TRAIL_LIFE = 600            // ms before a point fades out
+    const sandDots = []               // background grains that scatter like the letters
+    let trailDrawn = false
+    const sizeTrail = () => {
+      if (!canvas) return
+      const dpr = Math.min(window.devicePixelRatio || 1, 2)
+      const rect = canvas.getBoundingClientRect()
+      trailW = rect.width
+      trailH = rect.height
+      trailLeft = rect.left
+      trailTop = rect.top
+      canvas.width = Math.round(trailW * dpr)
+      canvas.height = Math.round(trailH * dpr)
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      // Lay out a jittered grid of grains across the canvas.
+      sandDots.length = 0
+      const S = 19
+      for (let gy = S / 2; gy < trailH; gy += S) {
+        for (let gx = S / 2; gx < trailW; gx += S) {
+          sandDots.push({
+            rx: gx + (Math.random() - 0.5) * S * 0.7,
+            ry: gy + (Math.random() - 0.5) * S * 0.7,
+            ox: 0, oy: 0,
+          })
+        }
+      }
+    }
+    sizeTrail()
 
     let prevX = mouseRef.current.x
     let prevY = mouseRef.current.y
@@ -258,24 +321,89 @@ export default function TextBulge() {
       prevX = m.x
       prevY = m.y
 
+      const bo = beamOriginRef.current
       const env = {
         mx: m.x, my: m.y, active: m.active,
         vx, vy, speed: Math.hypot(vx, vy), dt,
+        bx: bo.x, by: bo.y,   // spotlight beam origin (the Spotlight tab)
       }
 
       const eff = EFFECTS.find((e) => e.id === activeIdRef.current)
       const chars = charsRef.current
       for (let i = 0; i < chars.length; i++) eff.apply(chars[i], env)
 
+      if (ctx) {
+        if (activeIdRef.current === 'sand') {
+          if (!trailDrawn) sizeTrail()   // refresh size/position on entering sand
+          ctx.clearRect(0, 0, trailW, trailH)
+
+          // Background grains scatter with the same physics as the letters.
+          const cmx = m.x - trailLeft, cmy = m.y - trailTop
+          const kick = m.active && env.speed > 40
+          const nvx = kick ? env.vx / env.speed : 0
+          const nvy = kick ? env.vy / env.speed : 0
+          ctx.fillStyle = 'rgba(90, 62, 30, 0.5)'
+          for (let i = 0; i < sandDots.length; i++) {
+            const d = sandDots[i]
+            d.ox *= 0.93
+            d.oy *= 0.93
+            if (kick) {
+              const dx = d.rx - cmx, dy = d.ry - cmy
+              const dist = Math.hypot(dx, dy)
+              if (dist < 95) {
+                const shove = Math.min(env.speed * 0.012, 16) * (1 - dist / 95)
+                d.ox += nvx * shove
+                d.oy += nvy * shove
+              }
+            }
+            ctx.fillRect(d.rx + d.ox - 1, d.ry + d.oy - 1, 2, 2)
+          }
+
+          // Record the cursor path, then drop points older than TRAIL_LIFE so
+          // the tail retracts and vanishes once you stop moving.
+          if (m.active) {
+            const px = m.x - trailLeft, py = m.y - trailTop
+            const last = trailPts[trailPts.length - 1]
+            if (!last || Math.hypot(px - last.x, py - last.y) > 1.5) {
+              trailPts.push({ x: px, y: py, t })
+            }
+          }
+          while (trailPts.length && t - trailPts[0].t > TRAIL_LIFE) trailPts.shift()
+
+          // Draw a smooth line that tapers from thick (head) to a fine point.
+          if (trailPts.length > 1) {
+            ctx.lineCap = 'round'
+            ctx.lineJoin = 'round'
+            for (let i = 1; i < trailPts.length; i++) {
+              const a = trailPts[i - 1], b = trailPts[i]
+              const f = i / (trailPts.length - 1)   // 0 at tail, 1 at the cursor
+              ctx.strokeStyle = `rgba(38, 24, 10, ${(0.05 + f * 0.28).toFixed(3)})`
+              ctx.lineWidth = 2 + f * 14
+              ctx.beginPath()
+              ctx.moveTo(a.x, a.y)
+              ctx.lineTo(b.x, b.y)
+              ctx.stroke()
+            }
+          }
+          trailDrawn = true
+        } else if (trailDrawn) {
+          ctx.clearRect(0, 0, trailW, trailH)
+          trailPts.length = 0
+          trailDrawn = false
+        }
+      }
+
       rafRef.current = requestAnimationFrame(frame)
     }
     rafRef.current = requestAnimationFrame(frame)
 
     window.addEventListener('resize', measure)
+    window.addEventListener('resize', sizeTrail)
     window.addEventListener('scroll', measure, { passive: true })
     return () => {
       cancelAnimationFrame(rafRef.current)
       window.removeEventListener('resize', measure)
+      window.removeEventListener('resize', sizeTrail)
       window.removeEventListener('scroll', measure)
     }
   }, [])
@@ -300,6 +428,15 @@ export default function TextBulge() {
     if (s) {
       s.style.setProperty('--mx', `${x}px`)
       s.style.setProperty('--my', `${y}px`)
+      // Spotlight beam: shaft from the Spotlight tab to the cursor. Angle is
+      // in conic-gradient convention (0deg up, clockwise); length caps the
+      // beam so the light stops at the cursor instead of running to the edge.
+      const o = beamOriginRef.current
+      const dx = x - o.x, dy = y - o.y
+      s.style.setProperty('--beam-angle', `${Math.atan2(dx, -dy) * 180 / Math.PI}deg`)
+      s.style.setProperty('--beam-len', `${Math.hypot(dx, dy)}px`)
+      s.style.setProperty('--beam-ox', `${o.x}px`)
+      s.style.setProperty('--beam-oy', `${o.y}px`)
     }
   }
   const handleLeave = () => {
@@ -356,6 +493,7 @@ export default function TextBulge() {
         {EFFECTS.map((e) => (
           <button
             key={e.id}
+            data-effect-id={e.id}
             className={`tb-btn${e.id === shownActive ? ' is-active' : ''}`}
             onClick={() => selectEffect(e.id)}
           >
@@ -374,6 +512,8 @@ export default function TextBulge() {
         onPointerUp={handleUp}
         onPointerCancel={handleUp}
       >
+        <canvas ref={trailRef} className="tb-trail" />
+
         <p ref={paraRef} className="tb-paragraph" />
 
         {wipe && (
