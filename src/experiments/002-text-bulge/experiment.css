@@ -47,6 +47,41 @@
   pointer-events: none;
 }
 
+/* Jelly cursor: a transparent "liquid glass" pill that springs after the
+   cursor. Sits above the text so it refracts/blurs the letters behind it. */
+.tb-jelly-cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 84px;
+  height: 64px;
+  margin: -32px 0 0 -42px;   /* center the box on its origin */
+  /* amorphous, slowly-morphing blob rather than a clean pill */
+  border-radius: 58% 42% 55% 45% / 52% 55% 45% 48%;
+  animation: tb-jelly-morph 7s ease-in-out infinite;
+  z-index: 2;
+  pointer-events: none;
+  transform-origin: 50% 50%;
+  will-change: transform, border-radius;
+  background: linear-gradient(
+    155deg,
+    rgba(255, 255, 255, 0.16),
+    rgba(255, 255, 255, 0.03) 45%,
+    rgba(255, 255, 255, 0) 75%
+  );
+  backdrop-filter: blur(3px) saturate(150%) brightness(1.04);
+  -webkit-backdrop-filter: blur(3px) saturate(150%) brightness(1.04);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  box-shadow:
+    inset 0 2px 4px rgba(255, 255, 255, 0.45),
+    inset 0 -3px 8px rgba(255, 255, 255, 0.08),
+    inset 0 0 18px rgba(255, 255, 255, 0.06),
+    0 8px 20px rgba(0, 0, 0, 0.14);
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+.tb-shell[data-effect='jelly'] .tb-jelly-cursor { opacity: 1; }
+
 /* ---- Per-effect theme tokens (also read by the wipe panel) ------------ *
  * --bg = full background, --glow/--glow-size = cursor pool, --ink = text. */
 [data-effect='magnetic'] {
@@ -59,7 +94,7 @@
 }
 [data-effect='jelly'] {
   --bg: linear-gradient(160deg, #ff4d9d 0%, #ff7a59 58%, #ffd24d 100%);
-  --glow: rgba(255, 255, 255, 0.28);
+  --glow: transparent;   /* no light pool — the cursor is a liquid-glass pill */
   --ink: #ffffff;
 }
 [data-effect='sand'] {
@@ -82,14 +117,6 @@
   --glow: rgba(255, 232, 175, 0.13);
   --glow-size: 360px;
   --ink: #4a4842; /* JS overrides per character */
-}
-[data-effect='refraction'] {
-  /* Dark theater with a glowing screen behind the text. */
-  --bg:
-    radial-gradient(58% 42% at 50% 40%, rgba(240, 235, 220, 0.18), transparent 72%),
-    linear-gradient(180deg, #0b0b12 0%, #050509 100%);
-  --glow: rgba(120, 190, 255, 0.16);
-  --ink: #f0f1f5;
 }
 
 /* ---- Per-effect ambient textures (shell only) ------------------------- */
@@ -134,7 +161,7 @@
     radial-gradient(rgba(190, 205, 255, 0.65) 0.6px, transparent 1.3px);
   background-size: 100% 100%, 100% 100%, 100% 100%, 130px 130px, 73px 91px;
   background-position: 0 0, 0 0, 0 0, 0 0, 37px 61px;
-  animation: tb-spin 22s linear infinite;
+  animation: tb-spin 40s linear infinite;
 }
 .tb-shell[data-effect='spotlight']::after {
   background:
@@ -154,23 +181,6 @@
       transparent 18deg),
     /* the rest stays in shadow */
     radial-gradient(120% 120% at 50% 50%, transparent 38%, rgba(0, 0, 0, 0.6));
-}
-.tb-shell[data-effect='refraction']::after {
-  background:
-    /* anaglyph 3D-glasses shimmer following the cursor */
-    conic-gradient(
-      from 0deg at var(--mx, 50%) var(--my, 50%),
-      rgba(255, 40, 120, 0.06), rgba(60, 180, 255, 0.06),
-      rgba(180, 80, 255, 0.06), rgba(255, 40, 120, 0.06)),
-    /* a row of theater seat-backs silhouetted along the bottom */
-    radial-gradient(ellipse 26px 38px at 50% 100%,
-      rgba(0, 0, 0, 0.6) 0 58%, transparent 60%),
-    /* cinema vignette */
-    radial-gradient(125% 120% at 50% 44%, transparent 52%, rgba(0, 0, 0, 0.55));
-  background-size: 100% 100%, 54px 130px, 100% 100%;
-  background-position: 0 0, center bottom, 0 0;
-  background-repeat: no-repeat, repeat-x, no-repeat;
-  animation: tb-hue 9s linear infinite;
 }
 
 /* ---- Directional wipe panel (theme transition) ----------------------- *
@@ -195,8 +205,12 @@
   from { transform: translate3d(-3%, -2%, 0) scale(1); }
   to   { transform: translate3d(3%, 2%, 0) scale(1.12); }
 }
-@keyframes tb-hue {
-  to { filter: hue-rotate(360deg); }
+@keyframes tb-jelly-morph {
+  0%   { border-radius: 58% 42% 55% 45% / 52% 55% 45% 48%; }
+  25%  { border-radius: 44% 56% 40% 60% / 58% 44% 56% 42%; }
+  50%  { border-radius: 55% 45% 62% 38% / 44% 60% 40% 56%; }
+  75%  { border-radius: 48% 52% 46% 54% / 54% 46% 60% 40%; }
+  100% { border-radius: 58% 42% 55% 45% / 52% 55% 45% 48%; }
 }
 
 /* Registered so the angle interpolates smoothly (drives the black-hole spokes). */
@@ -301,7 +315,7 @@
 @media (prefers-reduced-motion: reduce) {
   .tb-char { transition: none; }
   .tb-shell[data-effect='jelly']::after,
-  .tb-shell[data-effect='gravity']::after,
-  .tb-shell[data-effect='refraction']::after { animation: none; }
+  .tb-shell[data-effect='gravity']::after { animation: none; }
+  .tb-jelly-cursor { animation: none; }
   .tb-wipe { animation-duration: 1ms !important; }
 }

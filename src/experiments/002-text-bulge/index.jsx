@@ -52,7 +52,7 @@ const EFFECTS = [
       'Drag your finger across the words. They squish and wobble like jelly, ' +
       'jiggling for a beat before they settle.',
     apply(c, env) {
-      const R = 140, PUSH = 48
+      const R = 88, PUSH = 48
       let tx = 0, ty = 0
       if (env.active) {
         const dx = c.cx - env.mx, dy = c.cy - env.my
@@ -75,28 +75,28 @@ const EFFECTS = [
     id: 'sand',
     label: 'Sand',
     text:
-      'Sweep your cursor through the sentence. The letters scatter like grains ' +
-      'of sand, piling up in your wake and slowly drifting back.',
+      'Drag your cursor through the sentence. The letters and grains push ' +
+      'aside like sand and stay where you shove them.',
     touchText:
-      'Drag your finger through the sentence. The letters scatter like grains ' +
-      'of sand, piling up in your wake and slowly drifting back.',
+      'Drag your finger through the sentence. The letters and grains push ' +
+      'aside like sand and stay where you shove them.',
     apply(c, env) {
-      const R = 95
-      c.ox *= 0.93                          // slow settle back
-      c.oy *= 0.93
-      if (env.active && env.speed > 40) {
-        const dx = c.cx - env.mx, dy = c.cy - env.my
+      const R = 36   // a touch wider than the streak so it parts letters as it passes
+      // No settle-back: the cursor ploughs a channel and the letters stay put,
+      // shoved radially outward from wherever they currently sit.
+      if (env.active) {
+        const cx = c.cx + c.ox, cy = c.cy + c.oy
+        const dx = cx - env.mx, dy = cy - env.my
         const dist = Math.hypot(dx, dy)
         if (dist < R) {
-          const f = 1 - dist / R
-          const nvx = env.vx / env.speed, nvy = env.vy / env.speed
-          const shove = Math.min(env.speed * 0.012, 16) * f
-          c.ox += nvx * shove
-          c.oy += nvy * shove
+          const push = (R - dist) * 0.25
+          const inv = 1 / (dist || 1)
+          c.ox += dx * inv * push
+          c.oy += dy * inv * push
         }
       }
       const mag = Math.hypot(c.ox, c.oy)
-      const rot = mag * 0.4 * (c.seed - 0.5) // grainy tumble
+      const rot = Math.max(-22, Math.min(22, mag * 0.2 * (c.seed - 0.5)))
       c.el.style.transform =
         `translate(${c.ox.toFixed(2)}px, ${c.oy.toFixed(2)}px) rotate(${rot.toFixed(2)}deg)`
     },
@@ -172,40 +172,6 @@ const EFFECTS = [
         : 'none'
     },
   },
-  {
-    id: 'refraction',
-    label: '3D',
-    text:
-      'Glide your cursor over the text. It bows and splits into colour, as if ' +
-      'you are reading through a pane of warped glass.',
-    touchText:
-      'Drag your finger over the text. It bows and splits into colour, as if ' +
-      'you are reading through a pane of warped glass.',
-    apply(c, env) {
-      const R = 160
-      let inside = false
-      if (env.active) {
-        const dx = c.cx - env.mx, dy = c.cy - env.my
-        const dist = Math.hypot(dx, dy)
-        if (dist < R) {
-          inside = true
-          const f = dist / R                 // 0 center -> 1 edge
-          const dir = 1 / (dist || 1)
-          const ab = f * 7                    // chromatic offset grows outward
-          const ox = dx * dir * ab, oy = dy * dir * ab
-          const scale = 1 + (1 - f) * 0.45    // lens magnifies the center
-          c.el.style.transform = `scale(${scale.toFixed(3)})`
-          c.el.style.textShadow =
-            `${ox.toFixed(1)}px ${oy.toFixed(1)}px 0 rgba(255,42,92,0.55), ` +
-            `${(-ox).toFixed(1)}px ${(-oy).toFixed(1)}px 0 rgba(54,200,255,0.55)`
-        }
-      }
-      if (!inside) {
-        c.el.style.transform = ''
-        c.el.style.textShadow = 'none'
-      }
-    },
-  },
 ]
 
 function buildSpans(para, text) {
@@ -233,6 +199,7 @@ export default function TextBulge() {
   const rafRef = useRef(null)
   const measureRef = useRef(() => {})
   const trailRef = useRef(null)                   // sand snake-trail canvas
+  const jellyRef = useRef(null)                   // jelly liquid-glass pill cursor
   const beamOriginRef = useRef({ x: 0, y: 40 })   // Spotlight tab anchor
   const activeIdRef = useRef(EFFECTS[0].id)
   const transitioningRef = useRef(false)
@@ -282,6 +249,9 @@ export default function TextBulge() {
     const TRAIL_LIFE = 600            // ms before a point fades out
     const sandDots = []               // background grains that scatter like the letters
     let trailDrawn = false
+    const jelly = { ox: 0, oy: 0, vx: 0, vy: 0 }   // springy pill position
+    let jellyOn = false
+    let jellyAng = 0
     const sizeTrail = () => {
       if (!canvas) return
       const dpr = Math.min(window.devicePixelRatio || 1, 2)
@@ -295,7 +265,7 @@ export default function TextBulge() {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       // Lay out a jittered grid of grains across the canvas.
       sandDots.length = 0
-      const S = 19
+      const S = 12
       for (let gy = S / 2; gy < trailH; gy += S) {
         for (let gx = S / 2; gx < trailW; gx += S) {
           sandDots.push({
@@ -332,28 +302,49 @@ export default function TextBulge() {
       const chars = charsRef.current
       for (let i = 0; i < chars.length; i++) eff.apply(chars[i], env)
 
+      // Jelly cursor: a glass pill that springs after the cursor and
+      // squashes/stretches along its direction of travel.
+      if (jellyRef.current) {
+        if (activeIdRef.current === 'jelly') {
+          if (!jellyOn) {                       // snap to cursor when entering
+            jelly.ox = m.x; jelly.oy = m.y
+            jelly.vx = 0; jelly.vy = 0
+            jellyOn = true
+          }
+          spring(jelly, m.x, m.y, 240, 13, dt)  // underdamped => bouncy
+          const sp = Math.hypot(jelly.vx, jelly.vy)
+          const stretch = Math.min(sp * 0.0004, 0.42)
+          if (sp > 220) jellyAng = Math.atan2(jelly.vy, jelly.vx) * 180 / Math.PI
+          else jellyAng *= 0.88   // relax back to horizontal when idle
+          jellyRef.current.style.transform =
+            `translate(${jelly.ox.toFixed(2)}px, ${jelly.oy.toFixed(2)}px) ` +
+            `rotate(${jellyAng.toFixed(1)}deg) ` +
+            `scale(${(1 + stretch).toFixed(3)}, ${(1 - stretch * 0.55).toFixed(3)})`
+        } else {
+          jellyOn = false
+        }
+      }
+
       if (ctx) {
         if (activeIdRef.current === 'sand') {
           if (!trailDrawn) sizeTrail()   // refresh size/position on entering sand
           ctx.clearRect(0, 0, trailW, trailH)
 
-          // Background grains scatter with the same physics as the letters.
+          // Background grains push aside with the same physics as the letters:
+          // radial shove from their current spot, no settle-back.
           const cmx = m.x - trailLeft, cmy = m.y - trailTop
-          const kick = m.active && env.speed > 40
-          const nvx = kick ? env.vx / env.speed : 0
-          const nvy = kick ? env.vy / env.speed : 0
+          const R = 36   // a touch wider than the streak so it parts grains as it passes
           ctx.fillStyle = 'rgba(90, 62, 30, 0.5)'
           for (let i = 0; i < sandDots.length; i++) {
             const d = sandDots[i]
-            d.ox *= 0.93
-            d.oy *= 0.93
-            if (kick) {
-              const dx = d.rx - cmx, dy = d.ry - cmy
+            if (m.active) {
+              const dx = d.rx + d.ox - cmx, dy = d.ry + d.oy - cmy
               const dist = Math.hypot(dx, dy)
-              if (dist < 95) {
-                const shove = Math.min(env.speed * 0.012, 16) * (1 - dist / 95)
-                d.ox += nvx * shove
-                d.oy += nvy * shove
+              if (dist < R) {
+                const push = (R - dist) * 0.25
+                const inv = 1 / (dist || 1)
+                d.ox += dx * inv * push
+                d.oy += dy * inv * push
               }
             }
             ctx.fillRect(d.rx + d.ox - 1, d.ry + d.oy - 1, 2, 2)
@@ -370,20 +361,38 @@ export default function TextBulge() {
           }
           while (trailPts.length && t - trailPts[0].t > TRAIL_LIFE) trailPts.shift()
 
-          // Draw a smooth line that tapers from thick (head) to a fine point.
-          if (trailPts.length > 1) {
-            ctx.lineCap = 'round'
-            ctx.lineJoin = 'round'
-            for (let i = 1; i < trailPts.length; i++) {
-              const a = trailPts[i - 1], b = trailPts[i]
-              const f = i / (trailPts.length - 1)   // 0 at tail, 1 at the cursor
-              ctx.strokeStyle = `rgba(38, 24, 10, ${(0.05 + f * 0.28).toFixed(3)})`
-              ctx.lineWidth = 2 + f * 14
-              ctx.beginPath()
-              ctx.moveTo(a.x, a.y)
-              ctx.lineTo(b.x, b.y)
-              ctx.stroke()
+          // Draw the streak as ONE filled ribbon: offset each point along the
+          // path normal by its half-width and fill a single polygon. Drawing
+          // per-segment with round caps is what made it look like beads.
+          const n = trailPts.length
+          if (n > 2) {
+            const halfW = (i) => {
+              const taper = Math.sin(Math.PI * (i / (n - 1)))   // 0 at ends, 1 mid
+              return (1 + taper * 18) / 2
             }
+            const normal = (i) => {
+              const prev = trailPts[Math.max(0, i - 1)]
+              const next = trailPts[Math.min(n - 1, i + 1)]
+              let dx = next.x - prev.x, dy = next.y - prev.y
+              const len = Math.hypot(dx, dy) || 1
+              return { nx: -dy / len, ny: dx / len }
+            }
+            ctx.shadowColor = 'rgba(58, 38, 16, 0.5)'
+            ctx.shadowBlur = 6
+            ctx.fillStyle = 'rgba(46, 30, 12, 0.22)'
+            ctx.beginPath()
+            for (let i = 0; i < n; i++) {           // one edge, head -> tail
+              const p = trailPts[i], { nx, ny } = normal(i), w = halfW(i)
+              const x = p.x + nx * w, y = p.y + ny * w
+              if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y)
+            }
+            for (let i = n - 1; i >= 0; i--) {      // other edge, tail -> head
+              const p = trailPts[i], { nx, ny } = normal(i), w = halfW(i)
+              ctx.lineTo(p.x - nx * w, p.y - ny * w)
+            }
+            ctx.closePath()
+            ctx.fill()
+            ctx.shadowBlur = 0
           }
           trailDrawn = true
         } else if (trailDrawn) {
@@ -513,6 +522,7 @@ export default function TextBulge() {
         onPointerCancel={handleUp}
       >
         <canvas ref={trailRef} className="tb-trail" />
+        <div ref={jellyRef} className="tb-jelly-cursor" />
 
         <p ref={paraRef} className="tb-paragraph" />
 
