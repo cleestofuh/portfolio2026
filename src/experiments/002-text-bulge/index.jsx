@@ -137,35 +137,39 @@ const EFFECTS = [
       'Drag your finger across the dark. Only the words beneath your light ' +
       'wake up. The rest stay in shadow.',
     apply(c, env) {
-      const R = 170
-      const HALF = 9 * Math.PI / 180        // beam cone half-angle (matches CSS wedge)
+      // Beam-oriented lighting (matches the canvas beam, adapts to any angle).
+      // FEATHER widens the lit region to cover the canvas beam's blur fringe,
+      // so the lit letters fill the visible glow rather than the crisp edge.
+      // Inside the beam everything is fully lit; only the very edge feathers,
+      // so edge letters are as bright as ones on the spine. EDGE = soft band.
+      const PERP = 150, AHEAD = 90, FEATHER = 18, EDGE = 26
       let lit = 0
       if (env.active) {
-        // The bright pool right at the cursor.
-        const dist = Math.hypot(c.cx - env.mx, c.cy - env.my)
-        if (dist < R) lit = 1 - dist / R
+        const bdx = env.mx - env.bx, bdy = env.my - env.by   // tab -> cursor
+        const blen = Math.hypot(bdx, bdy) || 1
+        const ux = bdx / blen, uy = bdy / blen               // unit along the beam
 
-        // Anything the beam itself sweeps over: inside the cone from the
-        // Spotlight tab to the cursor, and not past the cursor.
-        const cdx = env.mx - env.bx, cdy = env.my - env.by   // tab -> cursor
-        const beamLen = Math.hypot(cdx, cdy)
-        const pdx = c.cx - env.bx, pdy = c.cy - env.by        // tab -> letter
-        const charDist = Math.hypot(pdx, pdy)
-        if (beamLen > 1 && charDist > 1 && charDist <= beamLen + R * 0.5) {
-          const cos = (cdx * pdx + cdy * pdy) / (beamLen * charDist)
-          const ang = Math.acos(Math.min(1, Math.max(-1, cos)))
-          if (ang < HALF) {
-            const edge = 1 - ang / HALF             // brighter toward the beam's spine
-            // Full along the shaft, easing off just past the cursor tip.
-            const tail = charDist <= beamLen ? 1 : 1 - (charDist - beamLen) / (R * 0.5)
-            lit = Math.max(lit, edge * tail)
-          }
+        // Cone: widens from the tab to PERP at the cursor (+feather everywhere).
+        const qx = c.cx - env.bx, qy = c.cy - env.by
+        const qAlong = qx * ux + qy * uy
+        const qPerp = qx * -uy + qy * ux
+        if (qAlong > 0 && qAlong <= blen + FEATHER) {
+          const halfW = (Math.min(qAlong, blen) / blen) * PERP + FEATHER
+          const e = (halfW - Math.abs(qPerp)) / EDGE   // flat inside, feathered edge
+          if (e > 0) lit = Math.min(1, e)
         }
+
+        // Oval pool at the cursor, oriented to the beam.
+        const rx = c.cx - env.mx, ry = c.cy - env.my
+        const along = rx * ux + ry * uy
+        const perp = rx * -uy + ry * ux
+        const ed = Math.hypot(along / (AHEAD + FEATHER), perp / (PERP + FEATHER))
+        if (ed < 1) lit = Math.max(lit, Math.min(1, (1 - ed) / 0.2))
       }
       const e = lit * lit                  // sharper edge
-      const r = Math.round(74 + (255 - 74) * e)
-      const g = Math.round(72 + (255 - 72) * e)
-      const b = Math.round(66 + (255 - 66) * e)
+      const r = Math.round(26 + (255 - 26) * e)
+      const g = Math.round(25 + (255 - 25) * e)
+      const b = Math.round(22 + (255 - 22) * e)
       c.el.style.color = `rgb(${r},${g},${b})`
       c.el.style.textShadow = e > 0.02
         ? `0 0 ${(e * 22).toFixed(1)}px rgba(255,238,200,${(e * 0.85).toFixed(2)})`
@@ -248,7 +252,7 @@ export default function TextBulge() {
     const trailPts = []               // recent cursor points: { x, y, t }
     const TRAIL_LIFE = 600            // ms before a point fades out
     const sandDots = []               // background grains that scatter like the letters
-    let trailDrawn = false
+    let canvasMode = null             // which effect currently owns the canvas
     const jelly = { ox: 0, oy: 0, vx: 0, vy: 0 }   // springy pill position
     let jellyOn = false
     let jellyAng = 0
@@ -327,7 +331,7 @@ export default function TextBulge() {
 
       if (ctx) {
         if (activeIdRef.current === 'sand') {
-          if (!trailDrawn) sizeTrail()   // refresh size/position on entering sand
+          if (canvasMode !== 'sand') { sizeTrail(); canvasMode = 'sand' }
           ctx.clearRect(0, 0, trailW, trailH)
 
           // Background grains push aside with the same physics as the letters:
@@ -394,11 +398,49 @@ export default function TextBulge() {
             ctx.fill()
             ctx.shadowBlur = 0
           }
-          trailDrawn = true
-        } else if (trailDrawn) {
+        } else if (activeIdRef.current === 'spotlight') {
+          if (canvasMode !== 'spotlight') { sizeTrail(); canvasMode = 'spotlight' }
+          ctx.clearRect(0, 0, trailW, trailH)
+
+          // One light: a blurred cone built from the tab→cursor vector, ending
+          // in an oval cap. Because it's built from the beam vector it orients
+          // to any angle, and the single gradient reads as one source.
+          if (m.active) {
+            const ox = beamOriginRef.current.x - trailLeft
+            const oy = beamOriginRef.current.y - trailTop
+            const cx = m.x - trailLeft, cy = m.y - trailTop
+            const dx = cx - ox, dy = cy - oy
+            const len = Math.hypot(dx, dy) || 1
+            const ux = dx / len, uy = dy / len
+            const px = -uy, py = ux                 // perpendicular to the beam
+            const PERP = 150, AHEAD = 90, NEAR = 7
+            const L1x = ox + px * NEAR, L1y = oy + py * NEAR
+            const R1x = ox - px * NEAR, R1y = oy - py * NEAR
+            const L2x = cx + px * PERP, L2y = cy + py * PERP
+            const R2x = cx - px * PERP, R2y = cy - py * PERP
+            const fx = cx + ux * AHEAD, fy = cy + uy * AHEAD
+
+            ctx.save()
+            ctx.filter = 'blur(16px)'
+            const grad = ctx.createLinearGradient(ox, oy, fx, fy)
+            grad.addColorStop(0, 'rgba(255, 249, 230, 0.22)')
+            grad.addColorStop(0.78, 'rgba(255, 246, 222, 0.22)')
+            grad.addColorStop(1, 'rgba(255, 243, 212, 0.06)')
+            ctx.fillStyle = grad
+            ctx.beginPath()
+            ctx.moveTo(L1x, L1y)
+            ctx.lineTo(L2x, L2y)
+            ctx.quadraticCurveTo(L2x + ux * AHEAD, L2y + uy * AHEAD, fx, fy)
+            ctx.quadraticCurveTo(R2x + ux * AHEAD, R2y + uy * AHEAD, R2x, R2y)
+            ctx.lineTo(R1x, R1y)
+            ctx.closePath()
+            ctx.fill()
+            ctx.restore()
+          }
+        } else if (canvasMode) {
           ctx.clearRect(0, 0, trailW, trailH)
           trailPts.length = 0
-          trailDrawn = false
+          canvasMode = null
         }
       }
 
@@ -442,8 +484,12 @@ export default function TextBulge() {
       // beam so the light stops at the cursor instead of running to the edge.
       const o = beamOriginRef.current
       const dx = x - o.x, dy = y - o.y
+      const len = Math.hypot(dx, dy)
+      // Cone half-angle that flares to the oval's half-width (~210px) at the cursor.
+      const half = Math.atan2(210, len) * 180 / Math.PI
       s.style.setProperty('--beam-angle', `${Math.atan2(dx, -dy) * 180 / Math.PI}deg`)
-      s.style.setProperty('--beam-len', `${Math.hypot(dx, dy)}px`)
+      s.style.setProperty('--beam-len', `${len}px`)
+      s.style.setProperty('--beam-half', `${half}deg`)
       s.style.setProperty('--beam-ox', `${o.x}px`)
       s.style.setProperty('--beam-oy', `${o.y}px`)
     }

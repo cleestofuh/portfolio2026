@@ -113,10 +113,10 @@
   --ink: #eef0f6;
 }
 [data-effect='spotlight'] {
-  --bg: #08080a;
-  --glow: rgba(255, 232, 175, 0.13);
-  --glow-size: 360px;
-  --ink: #4a4842; /* JS overrides per character */
+  --bg: #050506;
+  --glow: transparent;   /* beam + pool are drawn on the canvas */
+  --glow-size: 340px;
+  --ink: #1a1916; /* JS overrides per character */
 }
 
 /* ---- Per-effect ambient textures (shell only) ------------------------- */
@@ -164,23 +164,8 @@
   animation: tb-spin 40s linear infinite;
 }
 .tb-shell[data-effect='spotlight']::after {
-  background:
-    /* cap the beam at the cursor: no light travels past the spotlight */
-    radial-gradient(
-      circle at var(--beam-ox, 50%) var(--beam-oy, 40px),
-      transparent 0,
-      transparent calc(var(--beam-len, 120vh) - 70px),
-      rgba(8, 8, 10, 0.97) var(--beam-len, 120vh)),
-    /* shaft of light beaming down from the Spotlight tab toward the cursor */
-    conic-gradient(
-      from calc(var(--beam-angle, 180deg) - 9deg) at var(--beam-ox, 50%) var(--beam-oy, 40px),
-      transparent 0deg,
-      rgba(255, 240, 205, 0.12) 3deg,
-      rgba(255, 248, 228, 0.34) 9deg,
-      rgba(255, 240, 205, 0.12) 15deg,
-      transparent 18deg),
-    /* the rest stays in shadow */
-    radial-gradient(120% 120% at 50% 50%, transparent 38%, rgba(0, 0, 0, 0.6));
+  /* the beam + pool are drawn on the canvas; this just keeps the rest dark */
+  background: radial-gradient(120% 120% at 50% 50%, transparent 34%, rgba(0, 0, 0, 0.72));
 }
 
 /* ---- Directional wipe panel (theme transition) ----------------------- *
