@@ -469,11 +469,9 @@ export default function TextBulge() {
   }, [activeId])
 
   const handleMove = (e) => {
-    // On touch the fingertip sits on top of the effect, so lift the
-    // sample point above the contact so the spotlight/lens stays visible.
-    const offsetY = e.pointerType === 'touch' ? -56 : 0
+    // The effect happens right at the pointer/finger, no offset.
     const x = e.clientX
-    const y = e.clientY + offsetY
+    const y = e.clientY
     mouseRef.current = { x, y, active: true }
     const s = shellRef.current
     if (s) {
