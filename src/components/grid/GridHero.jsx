@@ -31,7 +31,7 @@ function GridHero() {
 
           <DraggableFrame className="grid-hero-meta" frameLabel="Subtitle">
             <p className="grid-hero-subtitle">
-              Currently vibin' and designin' @ <a href="https://www.linkedin.com/in/cleestofuh/" target="_blank" rel="noopener noreferrer" className="grid-link">LinkedIn</a>
+              Currently designing @ <a href="https://www.linkedin.com/in/cleestofuh/" target="_blank" rel="noopener noreferrer" className="grid-link">Roblox</a>
             </p>
           </DraggableFrame>
 
@@ -40,7 +40,7 @@ function GridHero() {
               I'm a product designer who cares about people, thinks in systems, sweats the details, and believes even complex workflows deserve a bit of delight.
             </p>
             <p className="grid-hero-about-text grid-hero-about-text--secondary">
-              Leading enterprise AI and employee experience design at LinkedIn.
+              Designing agentic data experiences at Roblox.
             </p>
           </DraggableFrame>
         </div>

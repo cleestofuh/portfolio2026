@@ -59,3 +59,20 @@ html {
   opacity: 1;
   transform: translateY(0);
 }
+
+/* Full-screen crossfade played while switching between the freg and grid
+   themes (sits above everything, including modals). */
+.theme-fade {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483600;
+  background: #e9eef2;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.theme-fade--on {
+  opacity: 1;
+  pointer-events: all;
+}

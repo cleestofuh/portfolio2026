@@ -56,6 +56,7 @@ function Work() {
             className="work-card reveal"
             key={i}
             style={{ position: 'relative', clipPath: `url(#card-clip-${i})` }}
+            data-cursor-tip="view case study"
           >
             <svg className="work-card-border" viewBox="0 0 100 100" preserveAspectRatio="none">
               <defs>

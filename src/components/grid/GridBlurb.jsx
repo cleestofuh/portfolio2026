@@ -9,7 +9,7 @@ function GridBlurb() {
             I'm a product designer who cares about people, thinks in systems, sweats the details, and believes even complex workflows deserve a bit of delight.
           </p>
           <p className="grid-about-text grid-about-text--secondary">
-            Leading enterprise AI and employee experience design at LinkedIn.
+            Designing agentic data experiences at Roblox.
           </p>
         </div>
       </DraggableFrame>

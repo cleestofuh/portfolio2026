@@ -1,0 +1,28 @@
+.cursor-tip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  /* offset down-right of the actual cursor point */
+  margin: 18px 0 0 18px;
+  z-index: 2147483000;
+  pointer-events: none;
+  white-space: nowrap;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #fff;
+  background: #1a1a1a;
+  padding: 7px 13px;
+  border-radius: 999px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transition: opacity 0.16s ease;
+}
+
+.cursor-tip--on {
+  opacity: 1;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .cursor-tip { display: none; }
+}

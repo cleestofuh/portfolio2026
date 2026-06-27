@@ -7,7 +7,7 @@ function Blurb() {
       <p className="about-text">
         <span className="about-text-serif reveal">I&apos;m a product designer who cares about people, thinks in systems, sweats the details, and believes even complex workflows deserve a bit of <span className="about-delight">delight<img src="/bulb.svg" alt="" className="about-delight-bulb" /></span>.</span>
         <br />
-        <span className="about-text-sans reveal" data-reveal-delay="250">Leading enterprise AI and employee experience design at <a href="https://www.linkedin.com/in/cleestofuh/" target="_blank" rel="noopener noreferrer" className="about-link about-link--preserve-case">LinkedIn</a>.
+        <span className="about-text-sans reveal" data-reveal-delay="250">Designing agentic data experiences at <a href="https://www.linkedin.com/in/cleestofuh/" target="_blank" rel="noopener noreferrer" className="about-link about-link--preserve-case">Roblox</a>.
         </span>
       </p>
       </div>

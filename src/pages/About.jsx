@@ -1,5 +1,4 @@
 import Navbar from '../components/Navbar'
-import ThemeToggle from '../components/ThemeToggle'
 import Footer from '../components/Footer'
 import DraggableFrame from '../components/grid/DraggableFrame'
 import { useTheme } from '../context/ThemeContext'
@@ -24,7 +23,8 @@ function AboutFreg() {
             <a href="/#contact" className="about-page-link">Contact</a>
           </div>
           <div className="about-page-bio">
-            <p>I'm currently leading a team at LinkedIn designing enterprise and AI-powered experiences that help go-to-market and employee-facing teams move faster with more confidence.</p>
+            <p>I'm currently designing agentic data experiences at Roblox.</p>
+            <p>Previously, I was leading a team at LinkedIn designing enterprise and AI-powered experiences that help go-to-market and employee-facing teams move faster with more confidence.</p>
             <p>I love 0 to 1 problems where both the problem and solution are still taking shape, moving quickly to bring ideas to life. With a background in HCI and computer science, I thrive at the intersection of design, and engineering to ship pragmatic, scalable solutions. I'm also continuously curious, experimenting with emerging technologies and AI tooling to evolve my processes make better decisions, faster.</p>
           </div>
           <div className="about-page-skills">
@@ -100,7 +100,8 @@ function AboutGrid() {
             </div>
           </DraggableFrame>
           <DraggableFrame className="about-grid-frame about-page-bio" frameLabel="Bio">
-            <p>I'm currently leading a team at LinkedIn designing enterprise and AI-powered experiences that help go-to-market and employee-facing teams move faster with more confidence.</p>
+            <p>I'm currently designing agentic data experiences at Roblox.</p>
+            <p>Previously, I was leading a team at LinkedIn designing enterprise and AI-powered experiences that help go-to-market and employee-facing teams move faster with more confidence.</p>
             <p>I love 0 to 1 problems where both the problem and solution are still taking shape, moving quickly to bring ideas to life. With a background in HCI and computer science, I thrive at the intersection of design, and engineering to ship pragmatic, scalable solutions. I'm also continuously curious, experimenting with emerging technologies and AI tooling to evolve my processes make better decisions, faster.</p>
           </DraggableFrame>
           <DraggableFrame className="about-grid-frame about-page-skills" frameLabel="Skills">
@@ -161,7 +162,6 @@ function About() {
 
   return (
     <>
-      <ThemeToggle />
       <Navbar forceVisible />
       {theme === 'grid' ? <AboutGrid /> : <AboutFreg />}
       <Footer />

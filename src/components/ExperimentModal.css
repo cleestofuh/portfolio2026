@@ -1,0 +1,63 @@
+.exp-modal-root {
+  position: fixed;
+  inset: 0;
+  /* above the theme toggle (99999) so the experiment covers the whole page */
+  z-index: 100000;
+}
+
+/* Dark panel that grows from the card rect to fill the screen. */
+.exp-modal-bg {
+  position: fixed;
+  inset: 0;
+  background: #0f0f0f;
+  transform-origin: 0 0;
+  transition:
+    transform 0.46s cubic-bezier(0.4, 0, 0.1, 1),
+    border-radius 0.46s ease;
+  will-change: transform;
+}
+
+/* The actual experiment, full-screen from the start (so it measures its
+   layout correctly) but faded in only once the panel has grown. */
+.exp-modal-content {
+  position: fixed;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease 0.14s;
+}
+
+.exp-modal-content.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.exp-modal-close {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 10001;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(18, 18, 20, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #f2f2f2;
+  cursor: pointer;
+  transition: background 160ms ease, transform 160ms ease;
+}
+
+.exp-modal-close:hover {
+  background: rgba(255, 255, 255, 0.16);
+  transform: scale(1.06);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .exp-modal-bg { transition: none; }
+  .exp-modal-content { transition: opacity 0.2s ease; }
+}

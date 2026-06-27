@@ -38,7 +38,7 @@ function GridWork() {
       <DraggableFrame className="grid-work-frame" frameLabel="Work">
         <div className="grid-work-cards">
           {projects.map((p) => (
-            <DraggableFrame key={p.slug} className="grid-work-card" frameLabel={`${p.company} / ${p.title}`} noResize>
+            <DraggableFrame key={p.slug} className="grid-work-card" frameLabel={`${p.company} / ${p.title}`} noResize cursorTip="view case study">
               <div className="grid-card-preview">
                 {p.image && <img src={p.image} alt={p.title} className="grid-card-img" />}
               </div>

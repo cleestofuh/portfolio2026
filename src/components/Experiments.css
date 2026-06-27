@@ -1,0 +1,61 @@
+.experiments {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 0 80px;
+  position: relative;
+  z-index: 1;
+}
+
+/* One card today, but keep the 2-col rhythm of the work grid for growth. */
+.experiments-grid {
+  grid-template-columns: repeat(2, 360px);
+}
+
+/* The card is a <button> — strip the user-agent chrome so it matches
+   the Work cards exactly. */
+.exp-card {
+  appearance: none;
+  -webkit-appearance: none;
+  font: inherit;
+  text-align: left;
+  padding: 0;
+}
+
+/* The whole card is the experiment's first page (no body/title): the real
+   magnetic effect, interactive on hover; clicking opens the modal. */
+.exp-card-surface {
+  position: relative;
+  height: 300px;
+  background: #0f0f0f;
+  overflow: hidden;
+}
+
+/* Toggle card: the split theme switch fills the surface (no dark bg). */
+.exp-toggle-surface {
+  background: transparent;
+}
+
+/* The card opens the modal, so keep a pointer cursor over the whole preview
+   (the embedded experiment otherwise sets cursor: default on its text). */
+.exp-live-stage,
+.exp-live-stage * {
+  cursor: pointer !important;
+}
+
+/* A "virtual screen" rendered full-size, then scaled to fit the card width
+   (1000 × 833 × 0.36 = 360 × 300), so it reads like the real experiment. */
+.exp-live-stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1000px;
+  height: 833px;
+  transform: scale(0.36);
+  transform-origin: top left;
+}
+
+@media (max-width: 768px) {
+  .experiments-grid {
+    grid-template-columns: 1fr;
+  }
+}

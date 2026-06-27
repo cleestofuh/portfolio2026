@@ -275,7 +275,9 @@
 }
 
 .content-sections {
-  background-color: #CFDBE5;
+  /* Transparent so the fixed water canvas shows through; the body's
+     #CFDBE5 keeps the same look when the canvas isn't rendered. */
+  background-color: transparent;
   position: relative;
 }
 

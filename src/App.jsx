@@ -1,38 +1,27 @@
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { useLocation, Link } from 'react-router-dom'
 import { useTheme } from './context/ThemeContext'
 import './App.css'
 import Navbar from './components/Navbar'
-import Ripples from './components/Ripples'
+import { dropWater } from './components/water/waterBus'
 import Blurb from './components/Blurb'
 import Work, { borderPaths, projects } from './components/Work'
+import Experiments from './components/Experiments'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 import GridNavbar from './components/grid/GridNavbar'
 import GridHero from './components/grid/GridHero'
 import GridWork from './components/grid/GridWork'
 import GridContact from './components/grid/GridContact'
-import ThemeToggle from './components/ThemeToggle'
+import GridExperiments from './components/grid/GridExperiments'
 
-function spawnRippleAt(container, cx, cy, sizes = [80, 140, 200]) {
-  const rings = sizes.map((size, i) => ({ delay: i * 150, size }));
+// Three.js + GSAP live in their own chunk so the water never blocks first paint.
+const WaterCanvas = lazy(() => import('./components/water/WaterCanvas'))
 
-  rings.forEach(({ delay, size }) => {
-    setTimeout(() => {
-      const ring = document.createElement('div');
-      ring.className = 'ripple-ring';
-      ring.style.left = `${cx}px`;
-      ring.style.top = `${cy}px`;
-      ring.style.width = `${size}px`;
-      ring.style.height = `${size}px`;
-      ring.style.marginLeft = `${-size / 2}px`;
-      ring.style.marginTop = `${-size / 2}px`;
-      container.appendChild(ring);
-      ring.addEventListener('animationend', () => ring.remove());
-    }, delay);
-  });
+function elementCenter(el) {
+  const rect = el.getBoundingClientRect();
+  return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
 }
-
 
 function setupHoverShift(el, amount = 5) {
   const onEnter = (e) => {
@@ -49,17 +38,6 @@ function setupHoverShift(el, amount = 5) {
     el.removeEventListener('mouseenter', onEnter);
     el.removeEventListener('mouseleave', onLeave);
   };
-}
-
-function getCenterRelativeTo(el, ancestor) {
-  let x = 0, y = 0;
-  let current = el;
-  while (current && current !== ancestor) {
-    x += current.offsetLeft;
-    y += current.offsetTop;
-    current = current.offsetParent;
-  }
-  return { x: x + el.offsetWidth / 2, y: y + el.offsetHeight / 2 };
 }
 
 function App() {
@@ -87,20 +65,6 @@ function App() {
     const container = heroRef.current;
     if (!container) return;
 
-    const timeout = setTimeout(() => {
-      const cx = container.offsetWidth / 2;
-      const cy = container.offsetHeight / 2;
-      spawnRippleAt(container, cx, cy, [200, 350, 500]);
-    }, 600);
-
-    return () => clearTimeout(timeout);
-  }, [theme]);
-
-  useEffect(() => {
-    if (theme !== 'freg') return;
-    const container = heroRef.current;
-    if (!container) return;
-
     const lilies = [lily1Ref.current, lily2Ref.current, lily3Ref.current].filter(Boolean);
     const frog = container.querySelector('.freg');
     const cleanups = [];
@@ -109,17 +73,19 @@ function App() {
       let shiftCleanup = null;
       const clearBounce = () => el.classList.remove('bounce-up');
       const onMouseEnter = () => {
-        const { x, y } = getCenterRelativeTo(el, container);
-        spawnRippleAt(container, x, y, [180, 280]);
+        const { x, y } = elementCenter(el);
+        dropWater(x, y, 0.12, 32);
       };
       const onMouseDown = () => {
         clearBounce();
-        const { x, y } = getCenterRelativeTo(el, container);
-        spawnRippleAt(container, x, y, [150, 250, 350]);
+        // Pressing a lily pushes the surface down...
+        const { x, y } = elementCenter(el);
+        dropWater(x, y, -0.4, 38);
       };
       const onMouseUp = () => {
-        const { x, y } = getCenterRelativeTo(el, container);
-        spawnRippleAt(container, x, y, [200, 320, 440]);
+        // ...and releasing lets it spring back up.
+        const { x, y } = elementCenter(el);
+        dropWater(x, y, 0.5, 42);
         clearBounce();
         void el.offsetWidth;
         el.classList.add('bounce-up');
@@ -187,15 +153,9 @@ function App() {
           { transform: `translate(${dx}px, ${dy}px) scale(1)` },
         ], { duration: 550, easing: 'ease-in-out', fill: 'forwards' });
 
-        // Spawn ripple at landing moment (85% through = squish frame)
+        // Splash at landing moment (85% through = squish frame)
         setTimeout(() => {
-          const containerRect = container.getBoundingClientRect();
-          spawnRippleAt(
-            container,
-            newViewportLeft + size / 2 - containerRect.left,
-            newViewportTop + size / 2 - containerRect.top,
-            [120, 200, 280]
-          );
+          dropWater(newViewportLeft + size / 2, newViewportTop + size / 2, 0.65, 40);
         }, 550 * 0.85);
 
         anim.onfinish = () => {
@@ -339,7 +299,6 @@ function App() {
   if (theme === 'grid') {
     return (
       <>
-        <ThemeToggle />
         <GridNavbar />
         <div className="grid-canvas">
           <GridHero />
@@ -348,6 +307,9 @@ function App() {
           </div>
           <div className="grid-canvas-contact" id="contact">
             <GridContact />
+          </div>
+          <div className="grid-canvas-experiments" id="experiments">
+            <GridExperiments />
           </div>
         </div>
         <footer className="grid-footer">
@@ -359,10 +321,11 @@ function App() {
 
   return (
     <>
-      <ThemeToggle />
       <Navbar />
+      <Suspense fallback={null}>
+        <WaterCanvas />
+      </Suspense>
       <div className="page-ripple-zone" ref={pageRef}>
-      <Ripples containerRef={pageRef} />
       <section className="hero" ref={heroRef}>
         <div className="title">
           <img ref={lily1Ref} src="/lily1.svg" alt="" className="lily lily1" />
@@ -400,6 +363,7 @@ function App() {
                 key={slug}
                 to={`/work/${slug}`}
                 className="cs-quick-btn"
+                data-cursor-tip="view case study"
                 onMouseEnter={() => {
                   if (quickLinksRef.current) {
                     const rect = quickLinksRef.current.getBoundingClientRect()
@@ -454,11 +418,9 @@ function App() {
 
         <p className="subtitle">
         <span className="subtitle-word">currently</span>{' '}
-          <span className="subtitle-word">vibin'</span>{' '}
-          <span className="subtitle-word">and</span>{' '}
-          <span className="subtitle-word">designin'</span>{' '}
+          <span className="subtitle-word">designing</span>{' '}
           <span className="subtitle-word">@</span>{' '}
-          <a href="https://www.linkedin.com/in/cleestofuh/" target="_blank" rel="noopener noreferrer" className="subtitle-link">linkedin</a>
+          <a href="https://www.linkedin.com/in/cleestofuh/" target="_blank" rel="noopener noreferrer" className="subtitle-link">roblox</a>
         </p>
       </section>
 
@@ -469,6 +431,10 @@ function App() {
 
         <section id="work">
           <Work />
+        </section>
+
+        <section id="experiments">
+          <Experiments />
         </section>
 
         <div className="rocks-divider">

@@ -3,7 +3,7 @@ import { useRef, useState, useCallback, useEffect } from 'react'
 // Global z-index counter — most recently interacted frame is always on top
 let globalZ = 1000
 
-function DraggableFrame({ children, className, frameLabel, initialSelected = false, noResize = false }) {
+function DraggableFrame({ children, className, frameLabel, initialSelected = false, noResize = false, cursorTip }) {
   const ref = useRef(null)
   const posRef = useRef({ x: 0, y: 0 })
   const sizeRef = useRef(null)
@@ -442,7 +442,7 @@ function DraggableFrame({ children, className, frameLabel, initialSelected = fal
   ].filter(Boolean).join(' ')
 
   return (
-    <div ref={ref} className={classes}>
+    <div ref={ref} className={classes} data-cursor-tip={cursorTip || undefined}>
       {frameLabel && (
         <span className={`grid-frame-label ${active ? 'grid-frame-label--active' : ''}`}>
           {frameLabel}

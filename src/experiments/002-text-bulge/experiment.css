@@ -13,6 +13,15 @@
   touch-action: none;
 }
 
+/* Preview mode: the shell fills its scaled stage (in a card) instead of
+   the viewport, so a real live instance can be embedded as a thumbnail. */
+.tb-shell.is-preview {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 7%;
+}
+
 /* ---- Background layers (subtle, per-effect, cursor-reactive) ---------- *
  * ::before = a soft pool of light/colour that follows the cursor.
  * ::after  = an ambient texture/pattern that hints at the effect's vibe.

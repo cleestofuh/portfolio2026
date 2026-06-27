@@ -195,7 +195,7 @@ function buildSpans(para, text) {
   })
 }
 
-export default function TextBulge() {
+export default function TextBulge({ preview = false }) {
   const shellRef = useRef(null)
   const paraRef = useRef(null)
   const charsRef = useRef([])
@@ -542,21 +542,23 @@ export default function TextBulge() {
     <>
       {/* Kept outside .tb-shell so the canvas's touch-action: none doesn't
           block horizontal swipe-scrolling of the tabs on small screens. */}
-      <nav className="tb-controls">
-        {EFFECTS.map((e) => (
-          <button
-            key={e.id}
-            data-effect-id={e.id}
-            className={`tb-btn${e.id === shownActive ? ' is-active' : ''}`}
-            onClick={() => selectEffect(e.id)}
-          >
-            {e.label}
-          </button>
-        ))}
-      </nav>
+      {!preview && (
+        <nav className="tb-controls">
+          {EFFECTS.map((e) => (
+            <button
+              key={e.id}
+              data-effect-id={e.id}
+              className={`tb-btn${e.id === shownActive ? ' is-active' : ''}`}
+              onClick={() => selectEffect(e.id)}
+            >
+              {e.label}
+            </button>
+          ))}
+        </nav>
+      )}
 
       <div
-        className="tb-shell"
+        className={`tb-shell${preview ? ' is-preview' : ''}`}
         ref={shellRef}
         data-effect={activeId}
         onPointerDown={handleMove}
