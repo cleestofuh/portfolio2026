@@ -2,8 +2,10 @@ import { useState } from 'react'
 import './Experiments.css'
 import { borderPaths } from './Work'
 import ExperimentModal from './ExperimentModal'
+import GameModal from './GameModal'
 import TextBulge from '../experiments/002-text-bulge'
 import ThemeSwitch from './ThemeSwitch'
+import ShikakuPreview from './ShikakuPreview'
 
 // The card surface IS the experiment's first page (magnetic), interactive on
 // hover. Rendered at a "virtual screen" size and scaled into the card. Each
@@ -31,6 +33,12 @@ const experiments = [
 
 function Experiments() {
   const [openExp, setOpenExp] = useState(null)
+  const [gameOrigin, setGameOrigin] = useState(null)
+
+  const openGame = (e) => {
+    const r = e.currentTarget.getBoundingClientRect()
+    setGameOrigin({ top: r.top, left: r.left, width: r.width, height: r.height })
+  }
 
   const handleOpen = (exp, e) => {
     const r = e.currentTarget.getBoundingClientRect()
@@ -69,6 +77,28 @@ function Experiments() {
             </button>
           ))}
 
+          {/* A game I made — opens shikakudays.com in a phone-style modal. */}
+          <button
+            type="button"
+            className="work-card exp-card exp-game-card reveal"
+            style={{ position: 'relative', clipPath: 'url(#exp-card-clip-game)' }}
+            data-cursor-tip="play the game"
+            onClick={openGame}
+            aria-label="Play Shikaku Days"
+          >
+            <svg className="work-card-border" viewBox="0 0 100 100" preserveAspectRatio="none">
+              <defs>
+                <clipPath id="exp-card-clip-game" clipPathUnits="objectBoundingBox">
+                  <path d={clipPaths[0]} />
+                </clipPath>
+              </defs>
+              <path d={borderPaths[0]} fill="none" stroke="#1a1a1a" strokeWidth="2.5" strokeLinejoin="round" />
+            </svg>
+            <div className="exp-card-surface exp-game-surface">
+              <ShikakuPreview />
+            </div>
+          </button>
+
           {/* Theme toggle, presented as an experiment card (split freg/grid). */}
           <div
             className="work-card exp-card exp-toggle-card reveal"
@@ -91,6 +121,7 @@ function Experiments() {
       </div>
 
       {openExp && <ExperimentModal exp={openExp} onClose={() => setOpenExp(null)} />}
+      {gameOrigin && <GameModal origin={gameOrigin} onClose={() => setGameOrigin(null)} />}
     </div>
   )
 }

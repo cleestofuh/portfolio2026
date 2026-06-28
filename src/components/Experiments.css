@@ -35,6 +35,14 @@
   background: transparent;
 }
 
+/* Game card: hand-drawn Shikaku art on a soft cream surface. */
+.exp-game-surface {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f1e8;
+}
+
 /* The card opens the modal, so keep a pointer cursor over the whole preview
    (the embedded experiment otherwise sets cursor: default on its text). */
 .exp-live-stage,
